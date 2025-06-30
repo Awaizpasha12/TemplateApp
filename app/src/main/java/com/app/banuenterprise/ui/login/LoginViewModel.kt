@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.banuenterprise.data.model.request.LoginRequest
 import com.app.banuenterprise.data.model.response.LoginResponse
-import com.app.banuenterprise.data.repository.LoginRepository
+import com.app.banuenterprise.data.repository.ApiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: LoginRepository
+    private val repository: ApiRepository
 ) : ViewModel() {
     private val _loginResult = MutableLiveData<LoginResponse>();
     val loginResult : LiveData<LoginResponse> = _loginResult
@@ -25,9 +25,9 @@ class LoginViewModel @Inject constructor(
                 _loginResult.postValue(response)
             } catch (e: Exception) {
                 _loginResult.value = LoginResponse(
-                    statusCode = 0,
+                    status = 0,
                     isSuccess = false,
-                    apiKey = "",
+                    apikey = "",
                     message = e.localizedMessage ?: "Something went wrong"
                 )
             }

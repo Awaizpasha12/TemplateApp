@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:layout_marginHorizontal="8dp"
+    android:elevation="4dp"
+    android:radius="12dp"
+    android:backgroundTint="?android:attr/colorBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvBillNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bill Number: IN10091452502074"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold"
+            android:textColor="#222222" />
+
+        <TextView
+            android:id="@+id/tvBillDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date: 2025-06-20"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#444444" />
+
+        <TextView
+            android:id="@+id/tvSalesman"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Salesman: Arun"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#666666" />
+
+        <TextView
+            android:id="@+id/tvRoute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Route: R K NAGAR (FRI)"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#666666" />
+
+        <TextView
+            android:id="@+id/tvCustomerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Customer: SAGAR FANCY STORE"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#444444" />
+
+        <TextView
+            android:id="@+id/tvNetValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Net Value: ₹2525"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#1976D2"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Day: Friday"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#777777" />
+
+        <TextView
+            android:id="@+id/tvBrand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Brand: lRL"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#555555" />
+
+        <TextView
+            android:id="@+id/tvCreditDays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Credit Days: 7"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#777777" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

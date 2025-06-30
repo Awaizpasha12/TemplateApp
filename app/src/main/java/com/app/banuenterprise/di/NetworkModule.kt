@@ -1,7 +1,7 @@
 package com.app.banuenterprise.di
 
 
-import com.app.banuenterprise.network.LoginApi
+import com.app.banuenterprise.network.RetrofitInterface
 import com.app.banuenterprise.utils.Constants
 import dagger.Module
 import dagger.Provides
@@ -29,6 +29,6 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideLoginApi(retrofit: Retrofit): LoginApi =
-        retrofit.create(LoginApi::class.java)
+    fun provideLoginApi(retrofit: Retrofit): RetrofitInterface =
+        retrofit.create(RetrofitInterface::class.java)
 }

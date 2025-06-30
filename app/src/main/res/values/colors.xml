@@ -10,6 +10,8 @@
 
 
     <color name="colorPrimary">#01579B</color>
+    <color name="colorPrimaryContainer">#01579B</color>
+    <color name="colorSecondary">#01579B</color>
     <color name="colorBorder">#909090</color>
     <color name="colorBackground">#EEF3F9</color>
     <color name="colorBoxBorder">#BDBDBD</color>
@@ -17,5 +19,11 @@
     <color name="colorTextLight">#616161</color>
     <!-- res/values/colors.xml -->
     <color name="splash_bg">#FFFFFF</color>
+    <!-- Primary brand blue matching icon color -->
+    <color name="primary_blue">#0F4C90</color>
+    <!-- Soft light-blue background for login screen -->
+    <color name="light_blue_background">#E8F0FE</color>
 
+    <!-- Medium gray for hints/textHints -->
+    <color name="gray_600">#757575</color>
 </resources>

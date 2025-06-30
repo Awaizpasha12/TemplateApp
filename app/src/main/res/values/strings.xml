@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Android-Template-Kotlin</string>
+    <string name="app_name">Payment Collection</string>
 
     <string name="please_wait">Please wait</string>
     <string name="error_permission_required">Permission Required</string>
@@ -9,5 +9,12 @@
     <string name="name">Name</string>
     <string name="id">id</string>
     <string name="github_user_list">Github User List</string>
-
+    <string name="dashboard_title">Dashboard</string>
+    <string name="menu_my_report">My Report</string>
+    <string name="menu_todays_collection">Today\'s Collection</string>
+    <string name="menu_receipt_entry">Receipt Entry</string>
+    <string name="menu_invoice_number_entry">Invoice Number Entry</string>
+    <string name="menu_invoice_online">Invoice Given For Online Payment</string>
+    <string name="menu_change_company">Change Company</string>
+    <string name="receipt_entry">Receipt Entry</string>
 </resources>

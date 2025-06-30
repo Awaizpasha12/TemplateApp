@@ -1,8 +1,8 @@
 package com.app.banuenterprise.data.model.response
 
 data class LoginResponse(
-    val statusCode : Int,
+    val status : Int,
     val isSuccess : Boolean,
-    val apiKey : String,
+    val apikey : String,
     val message : String,
 )

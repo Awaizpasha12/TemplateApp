@@ -1,0 +1,357 @@
+package com.app.banuenterprise.ui.outstanding.receiptEntry
+
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.app.banuenterprise.data.model.response.InvoiceDetail
+import com.app.banuenterprise.databinding.ActivityReceiptEntryBinding
+import com.app.banuenterprise.ui.outstanding.receiptEntry.adapter.ReceiptEntryGroupAdapter
+import com.app.banuenterprise.utils.SessionUtils
+import com.app.banuenterprise.utils.extentions.AppAlertDialog
+import com.app.banuenterprise.utils.extentions.LoadingDialog
+import com.app.banuenterprise.utils.simpleadapters.SimpleStringListAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+
+@AndroidEntryPoint
+class ReceiptEntry : AppCompatActivity() {
+    private lateinit var binding: ActivityReceiptEntryBinding
+    private val viewModel: ReceiptEntryViewModel by viewModels()
+
+    private var customerNameInvoiceMap: Map<String, List<InvoiceDetail>> = emptyMap()
+    private var customerNamesList: List<String> = emptyList()
+    private var selectedCustomer: String? = null
+    private lateinit var adapter: ReceiptEntryGroupAdapter
+    private val CAMERA_REQUEST_CODE = 1001
+    private val GALLERY_REQUEST_CODE = 1002
+    private var proofUri: Uri? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityReceiptEntryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        LoadingDialog.show(this, "Please wait...")
+
+        // 1. Fetch customer/invoice data
+        viewModel.getDetails(SessionUtils.getApiKey(this), viewModel.getCurrentDayName())
+        viewModel.invoicesByDay.observe(this) { response ->
+            if (response != null && response.isSuccess) {
+                customerNameInvoiceMap = response.data ?: emptyMap()
+                customerNamesList = customerNameInvoiceMap.keys.toList()
+                setupRecyclerView()
+            } else {
+                Toast.makeText(this, "Failed to load data", Toast.LENGTH_SHORT).show()
+            }
+            LoadingDialog.hide()
+        }
+
+        // 2. Customer selection logic
+        binding.tvCustomerName.setOnClickListener {
+            showSearchableDialog(
+                title = "Select Customer",
+                data = customerNamesList
+            ) { customer ->
+                if (selectedCustomer != customer) {
+                    selectedCustomer = customer
+                    binding.tvCustomerName.text = customer
+
+                    // Reset groups when customer changes!
+                    adapter.clearAll()
+                    adapter.setAvailableInvoices(customerNameInvoiceMap[customer] ?: emptyList())
+                    binding.btnAddGroup.isEnabled = true // Now allow adding groups
+                    // Optionally, auto-add first group
+                    adapter.addGroup()
+                }
+            }
+        }
+
+        // 3. Disable add-group button until customer selected
+        binding.btnAddGroup.isEnabled = false
+
+        binding.btnAddGroup.setOnClickListener {
+            if (selectedCustomer.isNullOrBlank()) {
+                Toast.makeText(this, "Please select a customer first", Toast.LENGTH_SHORT).show()
+            } else {
+                adapter.addGroup()
+            }
+        }
+
+        // Payment method spinner
+        val paymentMethods = listOf("Cash", "UPI", "Bank", "Cheque")
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, paymentMethods)
+        binding.spinnerPaymentMethod.adapter = spinnerAdapter
+
+// Set the listener for the Spinner
+        binding.spinnerPaymentMethod.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parentView: AdapterView<*>?) {
+                // No action needed
+            }
+
+            override fun onItemSelected(parentView: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Get selected payment method
+                val selectedMethod = parentView?.getItemAtPosition(position)?.toString() ?: ""
+
+                showProofImage(null)
+
+                // Show correct dialog based on the selected payment method
+                if (selectedMethod == "Cash" || selectedMethod == "Cheque") {
+                    // Enable camera option
+                    binding.btnProof.text = "Add Proof (Camera)"
+                } else {
+                    // Enable gallery option
+                    binding.btnProof.text = "Add Proof (Camera or Gallery)"
+                }
+            }
+        }
+
+        binding.btnSubmit.setOnClickListener {
+            // Validate customer
+            if (selectedCustomer.isNullOrBlank()) {
+                AppAlertDialog.show(this, "Please select a customer")
+                return@setOnClickListener
+            }
+            // Validate at least one group
+            if (adapter.items.isEmpty()) {
+                AppAlertDialog.show(this, "Please add at least one invoice")
+                return@setOnClickListener
+            }
+            // Validate each group
+            for ((idx, entry) in adapter.items.withIndex()) {
+                if (entry.invoiceNumber.isBlank()) {
+                    AppAlertDialog.show(this, "Invoice not selected in group ${idx + 1}")
+                    return@setOnClickListener
+                }
+                if (entry.amount <= 0.0) {
+                    AppAlertDialog.show(this, "Amount must be greater than 0 for bill number ${entry.invoiceNumber}")
+                    return@setOnClickListener
+                }
+                if (entry.amount > entry.defaultAmount) {
+                    AppAlertDialog.show(
+                        this,
+                        "Entered amount (${entry.amount}) for bill number ${entry.invoiceNumber} cannot exceed original invoice amount (${entry.defaultAmount})"
+                    )
+                    return@setOnClickListener
+                }
+            }
+            if(proofUri == null || proofUri.toString().equals("")){
+                AppAlertDialog.show(this, "Attaching proof is mandatory")
+                return@setOnClickListener
+            }
+            // Optionally: Validate remarks, payment method, proof
+            val remarks = binding.etRemarks.text?.toString() ?: ""
+            val paymentMethod = binding.spinnerPaymentMethod.selectedItem?.toString() ?: ""
+            if (paymentMethod.isBlank()) {
+                AppAlertDialog.show(this, "Please select a payment method")
+                return@setOnClickListener
+            }
+            // TODO: Validate proof if required
+
+            // Collect all data
+            val invoices = adapter.items.map {
+                mapOf(
+                    "invoiceNumber" to it.invoiceNumber,
+                    "brand" to it.brand,
+                    "amount" to it.amount
+                )
+            }
+            val submitData = mapOf(
+                "customer" to selectedCustomer,
+                "invoices" to invoices,
+                "remarks" to remarks,
+                "paymentMethod" to paymentMethod
+                // add proof if needed
+            )
+            // Send to API here
+            AppAlertDialog.show(this, "Submitting: $submitData")
+            // After success: clear form (optional)
+            // clearForm()
+        }
+
+        binding.btnProof.setOnClickListener {
+            val method = binding.spinnerPaymentMethod.selectedItem?.toString() ?: ""
+
+            // Camera permission check
+            if (method == "Cash" || method == "Cheque" ||
+                (method == "UPI" || method == "Bank")) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 10)
+                    return@setOnClickListener
+                }
+            }
+
+            // Gallery/image permission check
+            if (method == "UPI" || method == "Bank") {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_MEDIA_IMAGES), 11)
+                        return@setOnClickListener
+                    }
+                } else {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 11)
+                        return@setOnClickListener
+                    }
+                }
+            }
+
+            // Proof logic
+            if (method == "Cash" || method == "Cheque") {
+                openCamera()
+            } else if (method == "UPI" || method == "Bank") {
+                showProofPickerDialog()
+            } else {
+                AppAlertDialog.show(this, "Please select a payment method first.")
+            }
+        }
+
+
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 10 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Camera permission granted, proceed
+            openCamera()
+        }
+        if (requestCode == 11 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Gallery/image permission granted, open gallery if needed
+            openGallery()
+        }
+    }
+
+    private fun showProofPickerDialog() {
+        val options = arrayOf("Camera", "Gallery")
+        AlertDialog.Builder(this)
+            .setTitle("Select Proof")
+            .setItems(options) { dialog, which ->
+                when (which) {
+                    0 -> openCamera()
+                    1 -> openGallery()
+                }
+            }
+            .show()
+    }
+    private fun openCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val imageUri = FileProvider.getUriForFile(
+            this,
+            "${packageName}.fileprovider",
+            createImageFile()
+        )
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        proofUri = imageUri
+        startActivityForResult(intent, CAMERA_REQUEST_CODE)
+    }
+    private fun createImageFile(): File {
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "proof_${System.currentTimeMillis()}_", ".jpg", storageDir
+        )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                CAMERA_REQUEST_CODE -> {
+                    // proofUri contains the captured image URI
+                    showProofImage(proofUri)
+                }
+                GALLERY_REQUEST_CODE -> {
+                    proofUri = data?.data
+                    showProofImage(proofUri)
+                }
+            }
+        }
+    }
+    private fun showProofImage(uri: Uri?) {
+        if (uri != null) {
+            binding.llProofImage.visibility = View.VISIBLE
+            binding.ivProofPreview.setImageURI(uri)
+            // Or just keep proofUri for API upload
+        } else {
+            proofUri = null;
+//            AppAlertDialog.show(this, "No image selected!")
+            binding.llProofImage.visibility = View.GONE
+        }
+    }
+
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        startActivityForResult(intent, GALLERY_REQUEST_CODE)
+    }
+
+    private fun showSearchableDialog(
+        title: String,
+        data: List<String>,
+        onItemSelected: (String) -> Unit
+    ) {
+        val ctx = this
+        val dialogView = LayoutInflater.from(ctx).inflate(com.app.banuenterprise.R.layout.layout_dialog_search_list, null)
+        val etSearch = dialogView.findViewById<EditText>(com.app.banuenterprise.R.id.etSearch)
+        val rvList = dialogView.findViewById<RecyclerView>(com.app.banuenterprise.R.id.rvList)
+
+        lateinit var alertDialog: androidx.appcompat.app.AlertDialog
+
+        val adapter = SimpleStringListAdapter(data) { selected ->
+            onItemSelected(selected)
+            alertDialog.dismiss()
+        }
+        rvList.layoutManager = LinearLayoutManager(ctx)
+        rvList.adapter = adapter
+
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val filtered = data.filter { it.contains(s.toString(), ignoreCase = true) }
+                adapter.updateData(filtered)
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        alertDialog = MaterialAlertDialogBuilder(ctx)
+            .setTitle(title)
+            .setView(dialogView)
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun setupRecyclerView() {
+        adapter = ReceiptEntryGroupAdapter(
+            availableInvoices = emptyList(),
+            onListChanged = {
+                // Update total
+                binding.tvTotalAmount.text = "Total: ${adapter.items.sumOf { it.amount }}"
+            }
+        )
+        binding.rvGroups.layoutManager = LinearLayoutManager(this)
+        binding.rvGroups.adapter = adapter
+    }
+}

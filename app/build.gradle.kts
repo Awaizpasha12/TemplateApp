@@ -106,5 +106,6 @@ dependencies {
     // Data storage and preferences
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.core.splashscreen)
+    implementation("androidx.gridlayout:gridlayout:1.0.0")
 
 }

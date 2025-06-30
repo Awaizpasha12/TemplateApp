@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_blue_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Title TextView -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/receipt_entry"
+            android:layout_gravity="center"
+            android:textSize="20dp"
+            android:layout_margin="20dp"
+            android:textColor="#000000"
+            android:textStyle="bold"/>
+
+        <!-- 1. Customer selection (ALWAYS at the top) -->
+        <TextView
+            android:id="@+id/tvCustomerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Customer"
+            android:hint="Customer Name"
+            android:drawableEnd="@drawable/ic_arrow_drop_down"
+            android:background="@drawable/bg_field"
+            android:padding="16dp"
+            android:textSize="16sp"
+            android:focusable="true"
+            android:clickable="true"
+            android:layout_marginBottom="20dp" />
+
+        <!-- 2. Group (invoice) list -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvGroups"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 3. Add group button -->
+        <Button
+            android:id="@+id/btnAddGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Invoice"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Total Amount TextView -->
+        <TextView
+            android:id="@+id/tvTotalAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Total: 0"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="end"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Remarks EditText -->
+        <EditText
+            android:id="@+id/etRemarks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Remarks"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Payment Method TextView and Spinner -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Payment Method"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <Spinner
+            android:id="@+id/spinnerPaymentMethod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Add Proof Button -->
+        <Button
+            android:id="@+id/btnProof"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Proof"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Proof Image Preview -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Proof Image"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            android:id="@+id/llProofImage">
+
+            <ImageView
+                android:id="@+id/ivProofPreview"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_proof_image"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_image_placeholder" /> <!-- Initially hidden until an image is selected -->
+
+        </LinearLayout>
+
+        <!-- Submit Button -->
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit" />
+
+    </LinearLayout>
+</ScrollView>
