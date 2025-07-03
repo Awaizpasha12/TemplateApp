@@ -27,8 +27,8 @@ class DayWiseAdapter(
 
     override fun onBindViewHolder(holder: DayWiseViewHolder, position: Int) {
         val item = filteredList[position]
-        holder.binding.tvCustomerName.text = item.customer
-        holder.binding.tvCustomerTotal.text = "Total: ₹${item.total}"
+        holder.binding.tvCustomerName.text = item.customerName
+        holder.binding.tvCustomerTotal.text = "Total: ₹${item.totalPendingAmount}"
         holder.binding.tvRoute.text = "Route: ${item.route ?: "-"}"
         holder.binding.root.setOnClickListener {
             onItemClick(item)
@@ -42,9 +42,9 @@ class DayWiseAdapter(
             originalList
         } else {
             originalList.filter {
-                it.customer.contains(query, ignoreCase = true) ||
+                it.customerName.contains(query, ignoreCase = true) ||
                         (it.route?.contains(query, ignoreCase = true) ?: false) ||
-                        it.total.toString().contains(query)
+                        it.totalPendingAmount.toString().contains(query)
             }
         }
         notifyDataSetChanged()

@@ -16,5 +16,6 @@
     <string name="menu_invoice_number_entry">Invoice Number Entry</string>
     <string name="menu_invoice_online">Invoice Given For Online Payment</string>
     <string name="menu_change_company">Change Company</string>
+    <string name="log_out">Log out</string>
     <string name="receipt_entry">Receipt Entry</string>
 </resources>

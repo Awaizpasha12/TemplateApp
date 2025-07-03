@@ -2,7 +2,7 @@ package com.app.banuenterprise.utils
 
 object Constants {
     object Config {
-        const val BASE_URL = "http://192.168.59.78:4000/api/"
+        const val BASE_URL = "https://progress-hereby-relationships-michigan.trycloudflare.com/api/app/"
     }
 
     object DataStorePref {

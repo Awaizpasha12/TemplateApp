@@ -31,13 +31,13 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#444444" />
 
-        <TextView
-            android:id="@+id/tvSalesman"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Salesman: Arun"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#666666" />
+<!--        <TextView-->
+<!--            android:id="@+id/tvSalesman"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Salesman: Arun"-->
+<!--            android:textAppearance="?android:attr/textAppearanceSmall"-->
+<!--            android:textColor="#666666" />-->
 
         <TextView
             android:id="@+id/tvRoute"
@@ -65,7 +65,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvDay"
+            android:id="@+id/tvPendingAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Day: Friday"

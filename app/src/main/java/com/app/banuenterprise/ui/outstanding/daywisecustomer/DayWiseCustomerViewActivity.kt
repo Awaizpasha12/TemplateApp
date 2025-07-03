@@ -15,6 +15,7 @@ import com.app.banuenterprise.databinding.ActivityDayWiseCustomerViewBinding
 import com.app.banuenterprise.ui.outstanding.customerwisebills.CustomerWiseBillActivity
 import com.app.banuenterprise.ui.outstanding.daywisecustomer.adapter.DayWiseAdapter
 import com.app.banuenterprise.utils.SessionUtils
+import com.app.banuenterprise.utils.SupportMethods
 import com.app.banuenterprise.utils.extentions.LoadingDialog
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,26 +24,28 @@ class DayWiseCustomerViewActivity : AppCompatActivity() {
     private lateinit var binding : ActivityDayWiseCustomerViewBinding
     private val viewModel : DayWiseCustomerViewModel by viewModels()
     private var adapter: DayWiseAdapter? = null
-    private var daySelected : String = "";
+    private var daySelected : Int = 0;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDayWiseCustomerViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        daySelected = intent.extras?.getString("day") ?: ""
+        daySelected = intent.extras?.getInt("day") ?: 0
         // Set up the Toolbar
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.title = daySelected
+        supportActionBar?.title = SupportMethods.getDayFromInt(daySelected)
         binding.toolbar.setTitleTextColor(ContextCompat.getColor(this@DayWiseCustomerViewActivity, android.R.color.white))
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         LoadingDialog.show(this, "Please wait...")
         // Observe LiveData
         viewModel.dayWiseResult.observe(this, Observer { response ->
             LoadingDialog.hide();
-            if (response.isSuccess && response.data != null) {
-                if(response.data != null && response.data.size > 0) {
-                    adapter = DayWiseAdapter(response.data){ customerSelected ->
+            if (response.isSuccess && response.customers != null) {
+                if(response.customers != null && response.customers.size > 0) {
+                    adapter = DayWiseAdapter(response.customers){ customerSelected ->
                         val intent = Intent(this, CustomerWiseBillActivity::class.java)
-                        intent.putExtra("customerSelected",customerSelected.customer)
+                        intent.putExtra("customerSelected",customerSelected.customerName)
+                        intent.putExtra("customerId",customerSelected.customerId)
+                        intent.putExtra("daySelected",daySelected)
                         startActivity(intent)
                     }
                     binding.recyclerView.adapter = adapter

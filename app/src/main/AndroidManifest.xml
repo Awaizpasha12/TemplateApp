@@ -26,6 +26,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.outstanding.invoicegivenforonlinepayment.InvoiceGivenForOnlinePayment"
+            android:exported="false" />
+        <activity
+            android:name=".ui.outstanding.todayscollection.TodaysCollection"
+            android:exported="false" />
+        <activity
+            android:name=".ui.selectmodule.SelectModuleActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.outstanding.receiptEntry.ReceiptEntry"
             android:exported="false" />
         <activity
@@ -49,6 +58,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -58,7 +68,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>

@@ -28,11 +28,11 @@ class CustomerWiseBillAdapter(
         val item = filteredList[position]
         holder.binding.tvBillNumber.text = "Bill Number: ${item.billNumber}"
         holder.binding.tvBillDate.text = "Date: ${item.billDate}"
-        holder.binding.tvSalesman.text = "Salesman: ${item.salesman}"
+//        holder.binding.tvSalesman.text = "Salesman: ${item.salesman}"
         holder.binding.tvRoute.text = "Route: ${item.route}"
-        holder.binding.tvCustomerName.text = "Customer: ${item.customer}"
+        holder.binding.tvCustomerName.text = "Customer: ${item.customerName}"
         holder.binding.tvNetValue.text = "Net Value: ₹${item.netValue}"
-        holder.binding.tvDay.text = "Day: ${item.day}"
+        holder.binding.tvPendingAmount.text = "Pending Amount: ${item.pendingAmount}"
         holder.binding.tvBrand.text = "Brand: ${item.brand}"
         holder.binding.tvCreditDays.text = "Credit Days: ${item.creditDays}"
     }
@@ -45,13 +45,13 @@ class CustomerWiseBillAdapter(
         } else {
             originalList.filter {
                 it.billNumber.contains(query, ignoreCase = true) ||
-                        it.customer.contains(query, ignoreCase = true) ||
+                        it.customerName.contains(query, ignoreCase = true) ||
                         it.route.contains(query, ignoreCase = true) ||
-                        it.salesman.contains(query, ignoreCase = true) ||
+//                        it.salesman.contains(query, ignoreCase = true) ||
                         it.brand.contains(query, ignoreCase = true) ||
-                        it.day.contains(query, ignoreCase = true) ||
+//                        it.day.contains(query, ignoreCase = true) ||
                         it.billDate.contains(query, ignoreCase = true) ||
-                        it.netValue.toString().contains(query) ||
+                        it.pendingAmount.toString().contains(query) ||
                         it.creditDays.toString().contains(query)
             }
         }

@@ -18,10 +18,10 @@ class CustomerWiseBillViewModel @Inject constructor(
     private val _customerWiseResult = MutableLiveData<CustomerWiseResponse>();
     val customerWiseResult : LiveData<CustomerWiseResponse> = _customerWiseResult
 
-    fun getDetails(apikey : String,day : String){
+    fun getDetails(apikey : String,customerId : String,day : Int){
         viewModelScope.launch {
             try {
-                val response = repository.customerWiseBill(apikey,day)
+                val response = repository.customerWiseBill(apikey,customerId,day)
                 _customerWiseResult.postValue(response)
             } catch (e: Exception) {
                 e.printStackTrace()

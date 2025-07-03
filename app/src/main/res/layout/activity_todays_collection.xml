@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:background="@color/light_blue_background"
+    android:layout_height="match_parent"
+    tools:context=".ui.outstanding.todayscollection.TodaysCollection">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/primary_blue"/>
+
+    <TextView
+        android:id="@+id/tvSelectDate"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@id/toolbar"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_date_selector"
+        android:clickable="true"
+        android:drawableEnd="@drawable/ic_calendar"
+        android:drawablePadding="8dp"
+        android:focusable="true"
+        android:padding="10dp"
+        android:layout_alignParentRight="true"
+        android:text="Select Date"
+        android:textColor="@color/primary_blue"
+        android:textSize="16sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_below="@+id/tvSelectDate"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No customer to show"
+        android:id="@+id/tvNoItemInList"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+</RelativeLayout>

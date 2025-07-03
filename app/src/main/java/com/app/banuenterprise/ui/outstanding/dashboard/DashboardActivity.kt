@@ -15,8 +15,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.app.banuenterprise.R
 import com.app.banuenterprise.databinding.ActivityDashboardBinding
+import com.app.banuenterprise.ui.login.LoginActivity
 import com.app.banuenterprise.ui.outstanding.receiptEntry.ReceiptEntry
 import com.app.banuenterprise.ui.outstanding.selectday.SelectDays
+import com.app.banuenterprise.ui.outstanding.todayscollection.TodaysCollection
+import com.app.banuenterprise.ui.selectmodule.SelectModuleActivity
+import com.app.banuenterprise.utils.SessionUtils
 
 class DashboardActivity : AppCompatActivity() {
     lateinit var binding : ActivityDashboardBinding
@@ -60,8 +64,7 @@ class DashboardActivity : AppCompatActivity() {
                 openMyReport()
             }
             getString(R.string.menu_todays_collection) -> {
-                Toast.makeText(this, "Today's Collection selected", Toast.LENGTH_SHORT).show()
-                // startActivity(Intent(this, TodaysCollectionActivity::class.java))
+                openTodaysCollection()
             }
             getString(R.string.menu_receipt_entry) -> {
                 openReceiptEntry()
@@ -75,13 +78,30 @@ class DashboardActivity : AppCompatActivity() {
                 // startActivity(Intent(this, InvoiceOnlineActivity::class.java))
             }
             getString(R.string.menu_change_company) -> {
-                Toast.makeText(this, "Change Company selected", Toast.LENGTH_SHORT).show()
-                // startActivity(Intent(this, ChangeCompanyActivity::class.java))
+                openSelectCompany()
+            }
+            getString(R.string.log_out) -> {
+                SessionUtils.deletePrefData(applicationContext)
+                openLoginScreen()
             }
             else -> {
                 Toast.makeText(this, "Unknown Option", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    fun openLoginScreen(){
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish() // Optional: Ensure the current activity is removed from the stack
+
+    }
+    fun openSelectCompany(){
+        val intent = Intent(this, SelectModuleActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish() // Optional: Ensure the current activity is removed from the stack
+
     }
     fun openMyReport(){
         // Launch DashboardActivity
@@ -91,6 +111,10 @@ class DashboardActivity : AppCompatActivity() {
     fun openReceiptEntry(){
         // Launch DashboardActivity
         val intent = Intent(this, ReceiptEntry::class.java)
+        startActivity(intent)
+    }
+    fun openTodaysCollection(){
+        val intent = Intent(this, TodaysCollection::class.java)
         startActivity(intent)
     }
 }

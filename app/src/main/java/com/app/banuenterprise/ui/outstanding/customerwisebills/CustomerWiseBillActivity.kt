@@ -5,18 +5,13 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.banuenterprise.R
 import com.app.banuenterprise.databinding.ActivityCustomerWiseBillBinding
 import com.app.banuenterprise.ui.outstanding.customerwisebills.adapter.CustomerWiseBillAdapter
-import com.app.banuenterprise.ui.outstanding.daywisecustomer.DayWiseCustomerViewModel
-import com.app.banuenterprise.ui.outstanding.daywisecustomer.adapter.DayWiseAdapter
 import com.app.banuenterprise.utils.SessionUtils
 import com.app.banuenterprise.utils.extentions.LoadingDialog
 import androidx.lifecycle.Observer
@@ -29,11 +24,14 @@ class CustomerWiseBillActivity : AppCompatActivity() {
     private val viewModel : CustomerWiseBillViewModel by viewModels()
     private var adapter: CustomerWiseBillAdapter? = null
     private var customerSelected : String = "";
+    private var customerId : String = "";
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCustomerWiseBillBinding.inflate(layoutInflater)
         setContentView(binding.root)
         customerSelected = intent.extras?.getString("customerSelected") ?: ""
+        customerId = intent.extras?.getString("customerId") ?: ""
+
         // Set up the Toolbar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = customerSelected
@@ -43,9 +41,9 @@ class CustomerWiseBillActivity : AppCompatActivity() {
         // Observe LiveData
         viewModel.customerWiseResult.observe(this, Observer { response ->
             LoadingDialog.hide();
-            if (response.isSuccess && response.data != null) {
-                if(response.data != null && response.data.size > 0) {
-                    adapter = CustomerWiseBillAdapter(response.data)
+            if (response.isSuccess && response.invoices != null) {
+                if(response.invoices != null && response.invoices.size > 0) {
+                    adapter = CustomerWiseBillAdapter(response.invoices)
                     binding.recyclerView.adapter = adapter
                 }
                 else{
@@ -60,7 +58,7 @@ class CustomerWiseBillActivity : AppCompatActivity() {
         })
 
         // Call your API (provide username/password or get from session)
-        viewModel.getDetails(SessionUtils.getApiKey(this), customerSelected) // TODO: Replace with real credentials
+        viewModel.getDetails(SessionUtils.getApiKey(this), customerId,intent.extras?.getInt("daySelected") ?: 0) // TODO: Replace with real credentials
 
         binding.btnReturn.setOnClickListener {
             val intent = Intent(this, DashboardActivity::class.java)

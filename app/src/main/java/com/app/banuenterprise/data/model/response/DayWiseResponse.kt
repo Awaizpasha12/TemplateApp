@@ -1,14 +1,16 @@
 package com.app.banuenterprise.data.model.response
 
 data class DayWiseResponse(
-    val status: Int,
+    
     val isSuccess: Boolean,
     val message: String,
-    val data: List<CustomerTotal>?
+    val dayName : String?,
+    val customers: List<CustomerTotal>?
 )
 
 data class CustomerTotal(
-    val customer: String,
-    val total: Int,
+    val customerName: String,
+    val totalPendingAmount: Int,
     val route : String?,
+    val customerId : String?
 )

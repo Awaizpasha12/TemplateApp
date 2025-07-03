@@ -2,6 +2,7 @@ package com.app.banuenterprise.data.repository
 
 
 import android.content.Context.MODE_PRIVATE
+import com.app.banuenterprise.data.model.request.CustomerWiseRequest
 import com.app.banuenterprise.data.model.request.DayWiseRequest
 import com.app.banuenterprise.data.model.request.LoginRequest
 import com.app.banuenterprise.data.model.response.CustomerWiseResponse
@@ -18,11 +19,11 @@ class ApiRepository @Inject constructor(
     suspend fun login(request: LoginRequest): LoginResponse {
         return apiRepository.login(request)
     }
-    suspend fun dayWiseCustomer(apikey:String,day: String) : DayWiseResponse {
-        return apiRepository.getDayWiseCustomers(apikey,day)
+    suspend fun dayWiseCustomer(apikey:String,day: Int) : DayWiseResponse {
+        return apiRepository.getDayWiseCustomers(DayWiseRequest(apikey,day))
     }
-    suspend fun customerWiseBill(apikey:String,day: String) : CustomerWiseResponse {
-        return apiRepository.getCustomerWiseBill(apikey,day)
+    suspend fun customerWiseBill(apikey:String,customerId: String,day : Int) : CustomerWiseResponse {
+        return apiRepository.getCustomerWiseBill(CustomerWiseRequest(apikey,customerId,day))
     }
 
     suspend fun invoiceByDay(apikey:String,day: String) : InvoicesByDayResponse {

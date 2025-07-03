@@ -27,7 +27,7 @@ class LoginViewModel @Inject constructor(
                 _loginResult.value = LoginResponse(
                     status = 0,
                     isSuccess = false,
-                    apikey = "",
+                    token = "",
                     message = e.localizedMessage ?: "Something went wrong"
                 )
             }

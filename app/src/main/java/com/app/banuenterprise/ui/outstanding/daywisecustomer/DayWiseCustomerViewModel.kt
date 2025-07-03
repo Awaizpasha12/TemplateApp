@@ -19,7 +19,7 @@ class DayWiseCustomerViewModel @Inject constructor(
     private val _dayWiseResult = MutableLiveData<DayWiseResponse>();
     val dayWiseResult : LiveData<DayWiseResponse> = _dayWiseResult
 
-    fun getDetails(apikey : String,day : String){
+    fun getDetails(apikey : String,day : Int){
         viewModelScope.launch {
             try {
                 val response = repository.dayWiseCustomer(apikey,day)

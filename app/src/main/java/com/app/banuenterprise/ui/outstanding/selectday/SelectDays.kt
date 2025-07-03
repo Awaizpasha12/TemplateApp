@@ -42,10 +42,26 @@ class SelectDays : AppCompatActivity() {
     }
 
     fun onDayCardClicked(view: View) {
+        // Get the day from the tag set in the XML
         val dayTag = (view.parent as View).tag?.toString() ?: "Unknown"
+
+        // Map day name to integer value
+        val dayInt = when (dayTag) {
+            "Monday" -> 0
+            "Tuesday" -> 1
+            "Wednesday" -> 2
+            "Thursday" -> 3
+            "Friday" -> 4
+            "Saturday" -> 5
+            "Sunday" -> 6
+            else -> -1 // Default case if unknown
+        }
+
+        // Create intent to pass data to the next activity
         val intent = Intent(this, DayWiseCustomerViewActivity::class.java)
-        intent.putExtra("day",dayTag)
+        intent.putExtra("day", dayInt)  // Pass the integer value instead of the string day
         startActivity(intent)
     }
+
 
 }

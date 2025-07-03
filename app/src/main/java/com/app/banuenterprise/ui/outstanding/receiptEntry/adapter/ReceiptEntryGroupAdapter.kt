@@ -9,14 +9,14 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.banuenterprise.R
-import com.app.banuenterprise.data.model.response.InvoiceDetail
+import com.app.banuenterprise.data.model.response.CustomerData
 import com.app.banuenterprise.databinding.ItemReceiptEntryGroupBinding
 import com.app.banuenterprise.ui.outstanding.receiptEntry.ReceiptEntryGroupUiModel
 import com.app.banuenterprise.utils.simpleadapters.SimpleStringListAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ReceiptEntryGroupAdapter(
-    private var availableInvoices: List<InvoiceDetail>,
+    private var availableInvoices: List<CustomerData>,
     private val onListChanged: () -> Unit
 ) : RecyclerView.Adapter<ReceiptEntryGroupAdapter.GroupViewHolder>() {
 
@@ -24,7 +24,7 @@ class ReceiptEntryGroupAdapter(
     private var amountWatcher: TextWatcher? = null
 
     // Set invoice list when customer changes, and reset items
-    fun setAvailableInvoices(newList: List<InvoiceDetail>) {
+    fun setAvailableInvoices(newList: List<CustomerData>) {
         availableInvoices = newList
         clearAll()
         notifyDataSetChanged()
@@ -126,8 +126,8 @@ class ReceiptEntryGroupAdapter(
                     val detail = availableInvoices.find { it.billNumber == selectedNo }
                     entry.invoiceNumber = selectedNo
                     entry.brand = detail?.brand ?: ""
-                    entry.amount = detail?.amount ?: 0.0
-                    entry.defaultAmount = detail?.amount ?: 0.0
+//                    entry.amount = detail?.pendingAmount ?: 0.0
+//                    entry.defaultAmount = detail?.pendingAmount ?: 0.0
                     notifyItemChanged(adapterPosition)
                     onListChanged()
                     // DO NOT call onListChanged() here; TextWatcher will handle it after setText()

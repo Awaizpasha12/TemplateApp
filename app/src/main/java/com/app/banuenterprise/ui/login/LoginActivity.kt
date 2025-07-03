@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
+import com.app.banuenterprise.utils.extentions.LoadingDialog
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
@@ -42,6 +43,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.btnLogin.setOnClickListener {
+            LoadingDialog.show(this,"Logging in please wait")
             val username = binding.etUsername.text.toString()
             val password = binding.etPassword.text.toString()
             viewModel.login(username, password)
@@ -50,8 +52,9 @@ class LoginActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.loginResult.observe(this) { result ->
+            LoadingDialog.hide()
             if (result.isSuccess) {
-                sharedPref.edit { putString("apikey", result.apikey) }
+                sharedPref.edit { putString("apikey", result.token) }
                 // Navigate to DashboardActivity or next screen
                 openDashboard()
             } else {

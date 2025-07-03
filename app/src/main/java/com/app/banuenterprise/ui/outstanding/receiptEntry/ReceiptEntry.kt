@@ -25,8 +25,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.app.banuenterprise.data.model.response.CustomerData
 import com.app.banuenterprise.data.model.response.InvoiceDetail
 import com.app.banuenterprise.databinding.ActivityReceiptEntryBinding
+import com.app.banuenterprise.ui.outstanding.customerwisebills.adapter.CustomerWiseBillAdapter
 import com.app.banuenterprise.ui.outstanding.receiptEntry.adapter.ReceiptEntryGroupAdapter
 import com.app.banuenterprise.utils.SessionUtils
 import com.app.banuenterprise.utils.extentions.AppAlertDialog
@@ -43,6 +45,7 @@ class ReceiptEntry : AppCompatActivity() {
 
     private var customerNameInvoiceMap: Map<String, List<InvoiceDetail>> = emptyMap()
     private var customerNamesList: List<String> = emptyList()
+    private var customerNameCustomerId: MutableMap<String, String> = mutableMapOf()
     private var selectedCustomer: String? = null
     private lateinit var adapter: ReceiptEntryGroupAdapter
     private val CAMERA_REQUEST_CODE = 1001
@@ -56,12 +59,23 @@ class ReceiptEntry : AppCompatActivity() {
 
         LoadingDialog.show(this, "Please wait...")
 
-        // 1. Fetch customer/invoice data
-        viewModel.getDetails(SessionUtils.getApiKey(this), viewModel.getCurrentDayName())
-        viewModel.invoicesByDay.observe(this) { response ->
+        viewModel.getAllCustomer(SessionUtils.getApiKey(this))
+        viewModel.allCustomerDetails.observe(this) { response ->
             if (response != null && response.isSuccess) {
-                customerNameInvoiceMap = response.data ?: emptyMap()
-                customerNamesList = customerNameInvoiceMap.keys.toList()
+
+//                customerNameInvoiceMap = response.data ?: emptyMap()
+//                customerNamesList = customerNameInvoiceMap.keys.toList()
+
+                // Check if customers list is not null and contains at least one customer
+                if (response.customers != null && response.customers.isNotEmpty()) {
+                    for (cus in response.customers) {
+                        // Check if customerId and customerName are not null
+                        if (cus.customerId != null) {
+                            customerNameCustomerId[cus.customerId] = cus.customerName
+                        }
+                    }
+                }
+
                 setupRecyclerView()
             } else {
                 Toast.makeText(this, "Failed to load data", Toast.LENGTH_SHORT).show()
@@ -69,24 +83,48 @@ class ReceiptEntry : AppCompatActivity() {
             LoadingDialog.hide()
         }
 
-        // 2. Customer selection logic
         binding.tvCustomerName.setOnClickListener {
+            // Create a list of customer names for display in the dialog
+            val customerNamesList = customerNameCustomerId.values.toList()
+
+            // Show the dialog
             showSearchableDialog(
                 title = "Select Customer",
                 data = customerNamesList
-            ) { customer ->
-                if (selectedCustomer != customer) {
-                    selectedCustomer = customer
-                    binding.tvCustomerName.text = customer
+            ) { selectedCustomerName ->
+                // Retrieve the customerId based on the selected customer name
+                val selectedCustomerId = customerNameCustomerId.filterValues { it == selectedCustomerName }
+                    .keys
+                    .firstOrNull()
 
-                    // Reset groups when customer changes!
-                    adapter.clearAll()
-                    adapter.setAvailableInvoices(customerNameInvoiceMap[customer] ?: emptyList())
-                    binding.btnAddGroup.isEnabled = true // Now allow adding groups
-                    // Optionally, auto-add first group
-                    adapter.addGroup()
+                if (selectedCustomerId != null) {
+                    selectedCustomer = selectedCustomerName
+                    binding.tvCustomerName.text = selectedCustomerName
+                    LoadingDialog.show(this,"Loading customer details please wait")
+                    viewModel.getCustomerWiseDetails(SessionUtils.getApiKey(applicationContext),selectedCustomerId)
                 }
             }
+        }
+
+
+
+        viewModel.customerWiseResult.observe(this) { response ->
+            LoadingDialog.hide()
+            if (response != null && response.isSuccess) {
+                var allInvoiceList :  List<CustomerData> = ArrayList()
+                if(response.invoices != null && response.invoices.size > 0){
+                    allInvoiceList = response.invoices
+                }
+                // Reset groups when customer changes!
+                adapter.clearAll()
+                adapter.setAvailableInvoices(allInvoiceList)
+                binding.btnAddGroup.isEnabled = true // Now allow adding groups
+                // Optionally, auto-add first group
+                adapter.addGroup()
+            } else {
+                Toast.makeText(this, "Failed to load data", Toast.LENGTH_SHORT).show()
+            }
+            LoadingDialog.hide()
         }
 
         // 3. Disable add-group button until customer selected

@@ -1,7 +1,7 @@
 package com.app.banuenterprise.data.model.response
 
 data class InvoicesByDayResponse(
-    val status: Int,
+    
     val isSuccess: Boolean,
     val message: String,
     val data: Map<String, List<InvoiceDetail>>
