@@ -1,7 +1,7 @@
-package com.app.banuenterprise.ui.outstanding.receiptEntry
+package com.app.banuenterprise.ui.outstanding.invoicenumberentry
 
-data class ReceiptEntryGroupUiModel(
-    var billItemId : String="",
+data class InvoiceEntryGroupUiModel(
+    var billItemId: String = "",
     var customerName: String = "",
     var invoiceNumber: String = "",
     var brand: String = "",

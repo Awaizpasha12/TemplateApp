@@ -10,6 +10,8 @@ import com.app.banuenterprise.data.model.response.DayWiseResponse
 import com.app.banuenterprise.data.model.response.InvoicesByDayResponse
 import com.app.banuenterprise.data.model.response.LoginResponse
 import com.app.banuenterprise.network.RetrofitInterface
+import okhttp3.ResponseBody
+import retrofit2.Response
 import javax.inject.Inject
 
 class ApiRepository @Inject constructor(
@@ -26,7 +28,7 @@ class ApiRepository @Inject constructor(
         return apiRepository.getCustomerWiseBill(CustomerWiseRequest(apikey,customerId,day))
     }
 
-    suspend fun invoiceByDay(apikey:String,day: String) : InvoicesByDayResponse {
-        return apiRepository.getInvoicesByDay(apikey,day)
+    suspend fun invoiceByDay(apikey:String,day: Int) : Response<ResponseBody> {
+        return apiRepository.getInvoicesByDay(DayWiseRequest(apikey,day))
     }
 }

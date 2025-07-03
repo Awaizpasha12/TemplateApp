@@ -3,14 +3,14 @@ package com.app.banuenterprise.ui.outstanding.customerwisebills.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.app.banuenterprise.data.model.response.CustomerData
+import com.app.banuenterprise.data.model.response.BillItem
 import com.app.banuenterprise.databinding.ItemCustomerWiseBillBinding
 
 class CustomerWiseBillAdapter(
-    private val originalList: List<CustomerData>
+    private val originalList: List<BillItem>
 ) : RecyclerView.Adapter<CustomerWiseBillAdapter.BillViewHolder>() {
 
-    private var filteredList: List<CustomerData> = originalList.toList()
+    private var filteredList: List<BillItem> = originalList.toList()
 
     inner class BillViewHolder(val binding: ItemCustomerWiseBillBinding) :
         RecyclerView.ViewHolder(binding.root)

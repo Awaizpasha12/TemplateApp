@@ -25,10 +25,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.app.banuenterprise.data.model.response.CustomerData
+import com.app.banuenterprise.data.model.response.BillItem
 import com.app.banuenterprise.data.model.response.InvoiceDetail
 import com.app.banuenterprise.databinding.ActivityReceiptEntryBinding
-import com.app.banuenterprise.ui.outstanding.customerwisebills.adapter.CustomerWiseBillAdapter
 import com.app.banuenterprise.ui.outstanding.receiptEntry.adapter.ReceiptEntryGroupAdapter
 import com.app.banuenterprise.utils.SessionUtils
 import com.app.banuenterprise.utils.extentions.AppAlertDialog
@@ -111,7 +110,7 @@ class ReceiptEntry : AppCompatActivity() {
         viewModel.customerWiseResult.observe(this) { response ->
             LoadingDialog.hide()
             if (response != null && response.isSuccess) {
-                var allInvoiceList :  List<CustomerData> = ArrayList()
+                var allInvoiceList :  List<BillItem> = ArrayList()
                 if(response.invoices != null && response.invoices.size > 0){
                     allInvoiceList = response.invoices
                 }
@@ -207,13 +206,19 @@ class ReceiptEntry : AppCompatActivity() {
                 return@setOnClickListener
             }
             // TODO: Validate proof if required
-
+            if(proofUri == null){
+                if (paymentMethod.isBlank()) {
+                    AppAlertDialog.show(this, "Please attach proof")
+                    return@setOnClickListener
+                }
+            }
             // Collect all data
             val invoices = adapter.items.map {
                 mapOf(
                     "invoiceNumber" to it.invoiceNumber,
                     "brand" to it.brand,
-                    "amount" to it.amount
+                    "amount" to it.amount,
+                    "billItemId" to it.billItemId
                 )
             }
             val submitData = mapOf(

@@ -7,6 +7,8 @@ import com.app.banuenterprise.data.model.response.CustomerWiseResponse
 import com.app.banuenterprise.data.model.response.DayWiseResponse
 import com.app.banuenterprise.data.model.response.InvoicesByDayResponse
 import com.app.banuenterprise.data.model.response.LoginResponse
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -20,7 +22,6 @@ interface RetrofitInterface {
     suspend fun getDayWiseCustomers(@Body req : DayWiseRequest):DayWiseResponse
     @POST("outstanding/customer-invoices")
     suspend fun getCustomerWiseBill(@Body req : CustomerWiseRequest):CustomerWiseResponse
-    @GET("invoices-by-day")
-    suspend fun getInvoicesByDay(@Query("token") apikey: String,
-                                    @Query("day") day: String):InvoicesByDayResponse
+    @POST("outstanding/invoices-by-day")
+    suspend fun getInvoicesByDay(@Body req : DayWiseRequest): Response<ResponseBody>
 }

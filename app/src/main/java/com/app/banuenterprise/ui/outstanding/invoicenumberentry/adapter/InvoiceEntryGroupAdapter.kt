@@ -1,5 +1,4 @@
-package com.app.banuenterprise.ui.outstanding.receiptEntry.adapter
-
+package com.app.banuenterprise.ui.outstanding.invoicenumberentry.adapter
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,20 +10,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.banuenterprise.R
 import com.app.banuenterprise.data.model.response.BillItem
-import com.app.banuenterprise.databinding.ItemReceiptEntryGroupBinding
-import com.app.banuenterprise.ui.outstanding.receiptEntry.ReceiptEntryGroupUiModel
+import com.app.banuenterprise.databinding.ItemInvoiceEntryGroupBinding
+import com.app.banuenterprise.ui.outstanding.invoicenumberentry.InvoiceEntryGroupUiModel
 import com.app.banuenterprise.utils.simpleadapters.SimpleStringListAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-class ReceiptEntryGroupAdapter(
+
+class InvoiceEntryGroupAdapter(
     private var availableInvoices: List<BillItem>,
     private val onListChanged: () -> Unit
-) : RecyclerView.Adapter<ReceiptEntryGroupAdapter.GroupViewHolder>() {
+) : RecyclerView.Adapter<InvoiceEntryGroupAdapter.GroupViewHolder>() {
 
-    val items = mutableListOf<ReceiptEntryGroupUiModel>()
-    private val alreadyPicked = mutableSetOf<String>()  // Keep track of selected combinations globally
-    private var amountWatcher: TextWatcher? = null
+    val items = mutableListOf<InvoiceEntryGroupUiModel>()
+    private val alreadyPicked = mutableSetOf<String>()
 
-    // Set invoice list when customer changes, and reset items
     fun setAvailableInvoices(newList: List<BillItem>) {
         availableInvoices = newList
         clearAll()
@@ -32,13 +30,14 @@ class ReceiptEntryGroupAdapter(
     }
 
     fun addGroup() {
-        items.add(ReceiptEntryGroupUiModel())
+        items.add(InvoiceEntryGroupUiModel())
         notifyItemInserted(items.size - 1)
         onListChanged()
     }
 
     fun removeGroup(position: Int) {
-        if (position >= 0 && position < items.size) {
+        if (position in items.indices) {
+            alreadyPicked.remove(items[position].invoiceDisplayText)
             items.removeAt(position)
             notifyItemRemoved(position)
             onListChanged()
@@ -47,13 +46,14 @@ class ReceiptEntryGroupAdapter(
 
     fun clearAll() {
         items.clear()
+        alreadyPicked.clear()
         notifyDataSetChanged()
         onListChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemReceiptEntryGroupBinding.inflate(inflater, parent, false)
+        val binding = ItemInvoiceEntryGroupBinding.inflate(inflater, parent, false)
         return GroupViewHolder(binding)
     }
 
@@ -63,19 +63,19 @@ class ReceiptEntryGroupAdapter(
         holder.bind(items[position])
     }
 
-    inner class GroupViewHolder(private val binding: ItemReceiptEntryGroupBinding) : RecyclerView.ViewHolder(binding.root) {
-
+    inner class GroupViewHolder(private val binding: ItemInvoiceEntryGroupBinding) : RecyclerView.ViewHolder(binding.root) {
         private var amountWatcher: TextWatcher? = null
 
-        fun bind(entry: ReceiptEntryGroupUiModel) {
-            // Set fields or placeholders
-            binding.tvInvoiceNumber.text = if (entry.invoiceDisplayText.isBlank()) "Select Invoice" else entry.invoiceDisplayText
-            binding.tvBrand.text = if (entry.invoiceNumber.isBlank()) "--" else entry.brand
+        fun bind(entry: InvoiceEntryGroupUiModel) {
+            val ctx = binding.root.context
 
-            // === Safe EditText update ===
+            binding.tvInvoiceSelector.text = if (entry.invoiceDisplayText.isBlank()) "Select Invoice" else entry.invoiceDisplayText
+            binding.tvCustomerName.text = entry.customerName.ifBlank { "--" }
+            binding.tvBrand.text = entry.brand.ifBlank { "--" }
+
+            // Amount field setup
             amountWatcher?.let { binding.etAmount.removeTextChangedListener(it) }
 
-            // Set text based on model
             binding.etAmount.setText(
                 if (entry.invoiceNumber.isBlank()) ""
                 else if (entry.amount == 0.0) "" else entry.amount.toString()
@@ -83,19 +83,13 @@ class ReceiptEntryGroupAdapter(
             binding.etAmount.hint = if (entry.invoiceNumber.isBlank()) "Select invoice first" else ""
             binding.etAmount.isEnabled = entry.invoiceNumber.isNotBlank()
 
-            // Create new watcher and add it
             amountWatcher = object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                     if (!binding.etAmount.isFocused) return
                     val newVal = s?.toString()?.toDoubleOrNull()
                     if (entry.invoiceNumber.isNotBlank()) {
-                        if (newVal != null && entry.amount != newVal) {
-                            entry.amount = newVal
-                            onListChanged()
-                        } else if (newVal == null && entry.amount != 0.0) {
-                            entry.amount = 0.0
-                            onListChanged()
-                        }
+                        entry.amount = newVal ?: 0.0
+                        onListChanged()
                     }
                 }
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -103,45 +97,40 @@ class ReceiptEntryGroupAdapter(
             }
             binding.etAmount.addTextChangedListener(amountWatcher)
 
-            val ctx = binding.root.context
-
-            // Filter invoices based on previously selected combinations
+            // Setup Invoice Selection
             val invoiceChoices = availableInvoices.filter { inv ->
-                val invoiceDisplayText = "${inv.billNumber} - ${inv.brand}"
-                !alreadyPicked.contains(invoiceDisplayText) || invoiceDisplayText == entry.invoiceDisplayText
+                val label = "${inv.billNumber} - ${inv.brand}"
+                !alreadyPicked.contains(label) || label == entry.invoiceDisplayText
             }
 
-            val invoiceChoicesDisplay = invoiceChoices.map { "${it.billNumber} - ${it.brand}" }
+            val displayList = invoiceChoices.map { "${it.billNumber} - ${it.brand}" }
 
-            binding.tvInvoiceNumber.setOnClickListener {
-                if (invoiceChoicesDisplay.isEmpty()) {
-                    Toast.makeText(ctx, "No invoices left to select.", Toast.LENGTH_SHORT).show()
+            binding.tvInvoiceSelector.setOnClickListener {
+                if (displayList.isEmpty()) {
+                    Toast.makeText(ctx, "No invoices left", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
-                showSearchableDialog(ctx, "Select Invoice", invoiceChoicesDisplay) { selectedText ->
-                    val (selectedInvoiceNumber, selectedBrand) = selectedText.split(" - ")
+                showSearchableDialog(ctx, "Select Invoice", displayList) { selectedText ->
+                    val item = availableInvoices.find {
+                        "${it.billNumber} - ${it.brand}" == selectedText
+                    }
 
-                    // Find the corresponding BillItem by matching both invoice number and brand
-                    val detail = availableInvoices.find { it.billNumber == selectedInvoiceNumber && it.brand == selectedBrand }
+                    if (item != null) {
+                        entry.invoiceNumber = item.billNumber
+                        entry.brand = item.brand
+                        entry.customerName = item.customerName
+                        entry.amount = item.pendingAmount.toDouble()
+                        entry.defaultAmount = item.pendingAmount.toDouble()
+                        entry.billItemId = item._id
+                        entry.invoiceDisplayText = selectedText
 
-                    // Update the entry with the selected values
-                    entry.invoiceNumber = selectedInvoiceNumber
-                    entry.brand = selectedBrand
-                    entry.amount = (detail?.pendingAmount ?: 0.0).toDouble()
-                    entry.defaultAmount = (detail?.pendingAmount ?: 0.0).toDouble()
-                    entry.billItemId = detail?._id ?: ""
-                    entry.invoiceDisplayText = "$selectedInvoiceNumber - $selectedBrand"  // Store for future comparison
+                        alreadyPicked.add(selectedText)
 
-                    // Add the selected combination to the set of picked invoices
-                    alreadyPicked.add(entry.invoiceDisplayText)
+                        notifyItemChanged(adapterPosition)
+                        onListChanged()
+                    }
 
-                    // Update the UI
-                    binding.tvInvoiceNumber.text = entry.invoiceDisplayText
-
-                    // Notify the adapter to update the view
-                    notifyItemChanged(adapterPosition)
-                    onListChanged()
                 }
             }
 
@@ -151,7 +140,6 @@ class ReceiptEntryGroupAdapter(
         }
     }
 
-    // Helper dialog function
     private fun showSearchableDialog(
         context: Context,
         title: String,
@@ -168,6 +156,7 @@ class ReceiptEntryGroupAdapter(
             onItemSelected(selected)
             alertDialog.dismiss()
         }
+
         rvList.layoutManager = LinearLayoutManager(context)
         rvList.adapter = adapter
 

@@ -26,6 +26,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.outstanding.invoicenumberentry.InvoiceNumberEntryActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.outstanding.invoicegivenforonlinepayment.InvoiceGivenForOnlinePayment"
             android:exported="false" />
         <activity

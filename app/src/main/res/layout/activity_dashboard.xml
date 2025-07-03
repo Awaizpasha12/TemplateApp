@@ -305,7 +305,7 @@
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground"
                 android:onClick="onOptionSelected"
-                android:tag="@string/menu_change_company">
+                android:tag="@string/log_out">
 
                 <LinearLayout
                     android:layout_width="match_parent"

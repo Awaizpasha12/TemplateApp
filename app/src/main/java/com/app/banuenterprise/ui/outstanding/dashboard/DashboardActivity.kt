@@ -16,6 +16,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.app.banuenterprise.R
 import com.app.banuenterprise.databinding.ActivityDashboardBinding
 import com.app.banuenterprise.ui.login.LoginActivity
+import com.app.banuenterprise.ui.outstanding.invoicegivenforonlinepayment.InvoiceGivenForOnlinePayment
+import com.app.banuenterprise.ui.outstanding.invoicegivenforonlinepayment.InvoiceGivenForOnlinePaymentViewModel
+import com.app.banuenterprise.ui.outstanding.invoicenumberentry.InvoiceNumberEntryActivity
 import com.app.banuenterprise.ui.outstanding.receiptEntry.ReceiptEntry
 import com.app.banuenterprise.ui.outstanding.selectday.SelectDays
 import com.app.banuenterprise.ui.outstanding.todayscollection.TodaysCollection
@@ -70,12 +73,10 @@ class DashboardActivity : AppCompatActivity() {
                 openReceiptEntry()
             }
             getString(R.string.menu_invoice_number_entry) -> {
-                Toast.makeText(this, "Invoice Number Entry selected", Toast.LENGTH_SHORT).show()
-                // startActivity(Intent(this, InvoiceNumberEntryActivity::class.java))
+               openInvoiceEntry()
             }
             getString(R.string.menu_invoice_online) -> {
-                Toast.makeText(this, "Invoice Online selected", Toast.LENGTH_SHORT).show()
-                // startActivity(Intent(this, InvoiceOnlineActivity::class.java))
+                openInvoiceGivenForOnlinePayment();
             }
             getString(R.string.menu_change_company) -> {
                 openSelectCompany()
@@ -116,5 +117,14 @@ class DashboardActivity : AppCompatActivity() {
     fun openTodaysCollection(){
         val intent = Intent(this, TodaysCollection::class.java)
         startActivity(intent)
+    }
+    fun openInvoiceGivenForOnlinePayment(){
+        val intent = Intent(this, InvoiceGivenForOnlinePayment::class.java)
+        startActivity(intent)
+    }
+    fun openInvoiceEntry(){
+        val intent = Intent(this, InvoiceNumberEntryActivity::class.java)
+        startActivity(intent)
+
     }
 }
