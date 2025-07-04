@@ -14,4 +14,5 @@ object Constants {
         const val DARK = 1
         const val LIGHT = 2
     }
+
 }

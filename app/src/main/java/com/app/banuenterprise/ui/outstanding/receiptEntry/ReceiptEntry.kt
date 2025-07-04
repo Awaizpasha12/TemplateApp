@@ -11,6 +11,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
@@ -28,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.app.banuenterprise.data.model.response.BillItem
 import com.app.banuenterprise.data.model.response.InvoiceDetail
 import com.app.banuenterprise.databinding.ActivityReceiptEntryBinding
+import com.app.banuenterprise.supabase.SimpleSupabaseUploader
 import com.app.banuenterprise.ui.outstanding.receiptEntry.adapter.ReceiptEntryGroupAdapter
 import com.app.banuenterprise.utils.SessionUtils
 import com.app.banuenterprise.utils.extentions.AppAlertDialog
@@ -212,26 +214,37 @@ class ReceiptEntry : AppCompatActivity() {
                     return@setOnClickListener
                 }
             }
-            // Collect all data
-            val invoices = adapter.items.map {
-                mapOf(
-                    "invoiceNumber" to it.invoiceNumber,
-                    "brand" to it.brand,
-                    "amount" to it.amount,
-                    "billItemId" to it.billItemId
-                )
+            LoadingDialog.show(this,"submitting")
+            SimpleSupabaseUploader.uploadImage(
+                context = this,       // your Activity or Fragment’s context
+                uri     = proofUri!!  // the Uri you want to upload
+            ) { success, publicUrl ->
+                if (success && publicUrl != null) {
+                    // Collect all data
+                    val invoices = adapter.items.map {
+                        mapOf(
+                            "invoiceNumber" to it.invoiceNumber,
+                            "brand" to it.brand,
+                            "amount" to it.amount,
+                            "billItemId" to it.billItemId
+                        )
+                    }
+                    val submitData = mapOf(
+                        "customer" to selectedCustomer,
+                        "invoices" to invoices,
+                        "remarks" to remarks,
+                        "paymentMethod" to paymentMethod
+                        // add proof if needed
+                    )
+                    // Send to API here
+                    AppAlertDialog.show(this, "Submitting: $submitData")
+                } else {
+                    // Upload failed
+                    Toast.makeText(this, "Upload failed", Toast.LENGTH_SHORT).show()
+                }
+                LoadingDialog.hide();
             }
-            val submitData = mapOf(
-                "customer" to selectedCustomer,
-                "invoices" to invoices,
-                "remarks" to remarks,
-                "paymentMethod" to paymentMethod
-                // add proof if needed
-            )
-            // Send to API here
-            AppAlertDialog.show(this, "Submitting: $submitData")
-            // After success: clear form (optional)
-            // clearForm()
+
         }
 
         binding.btnProof.setOnClickListener {
@@ -273,6 +286,9 @@ class ReceiptEntry : AppCompatActivity() {
 
 
     }
+    // inside an Activity or Fragment…
+
+
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
