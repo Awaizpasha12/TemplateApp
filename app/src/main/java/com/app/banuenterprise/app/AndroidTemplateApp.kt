@@ -2,6 +2,7 @@ package com.app.banuenterprise.app
 
 import android.app.Application
 import android.app.Dialog
+import androidx.appcompat.app.AppCompatDelegate
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -9,6 +10,7 @@ class AndroidTemplateApp : Application() {
 
 
     override fun onCreate() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         instance = this
         super.onCreate()
     }

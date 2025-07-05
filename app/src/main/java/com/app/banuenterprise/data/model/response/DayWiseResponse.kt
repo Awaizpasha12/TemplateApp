@@ -10,7 +10,7 @@ data class DayWiseResponse(
 
 data class CustomerTotal(
     val customerName: String,
-    val totalPendingAmount: Int,
+    val totalPendingAmount: Double,
     val route : String?,
     val customerId : String?
 )

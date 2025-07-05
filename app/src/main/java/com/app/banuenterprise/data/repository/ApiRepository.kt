@@ -2,9 +2,13 @@ package com.app.banuenterprise.data.repository
 
 
 import android.content.Context.MODE_PRIVATE
+import com.app.banuenterprise.data.model.request.CollectionListRequest
 import com.app.banuenterprise.data.model.request.CustomerWiseRequest
 import com.app.banuenterprise.data.model.request.DayWiseRequest
+import com.app.banuenterprise.data.model.request.InvoiceGivenForOnlinePaymentRequest
 import com.app.banuenterprise.data.model.request.LoginRequest
+import com.app.banuenterprise.data.model.request.ReceiptEntryRequest
+import com.app.banuenterprise.data.model.response.CollectionListResponse
 import com.app.banuenterprise.data.model.response.CustomerWiseResponse
 import com.app.banuenterprise.data.model.response.DayWiseResponse
 import com.app.banuenterprise.data.model.response.InvoicesByDayResponse
@@ -31,4 +35,15 @@ class ApiRepository @Inject constructor(
     suspend fun invoiceByDay(apikey:String,day: Int) : Response<ResponseBody> {
         return apiRepository.getInvoicesByDay(DayWiseRequest(apikey,day))
     }
+    suspend fun submitReceiptEntry(reqObj:ReceiptEntryRequest) : Response<ResponseBody> {
+        return apiRepository.submitReceiptEntry(reqObj)
+    }
+    suspend fun getListCollections(reqObj:CollectionListRequest) : CollectionListResponse {
+        return apiRepository.getListCollections(reqObj)
+    }
+
+    suspend fun submitInvoiceGivenForOnlinePayment(reqObj:InvoiceGivenForOnlinePaymentRequest) : Response<ResponseBody> {
+        return apiRepository.submitInvoiceGivenForOnlinePayment(reqObj)
+    }
+
 }

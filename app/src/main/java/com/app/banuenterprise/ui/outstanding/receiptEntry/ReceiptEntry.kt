@@ -26,12 +26,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.app.banuenterprise.data.model.request.BillItemRequest
+import com.app.banuenterprise.data.model.request.ReceiptEntryRequest
 import com.app.banuenterprise.data.model.response.BillItem
 import com.app.banuenterprise.data.model.response.InvoiceDetail
 import com.app.banuenterprise.databinding.ActivityReceiptEntryBinding
 import com.app.banuenterprise.supabase.SimpleSupabaseUploader
 import com.app.banuenterprise.ui.outstanding.receiptEntry.adapter.ReceiptEntryGroupAdapter
 import com.app.banuenterprise.utils.SessionUtils
+import com.app.banuenterprise.utils.SupportMethods
 import com.app.banuenterprise.utils.extentions.AppAlertDialog
 import com.app.banuenterprise.utils.extentions.LoadingDialog
 import com.app.banuenterprise.utils.simpleadapters.SimpleStringListAdapter
@@ -43,9 +46,6 @@ import java.io.File
 class ReceiptEntry : AppCompatActivity() {
     private lateinit var binding: ActivityReceiptEntryBinding
     private val viewModel: ReceiptEntryViewModel by viewModels()
-
-    private var customerNameInvoiceMap: Map<String, List<InvoiceDetail>> = emptyMap()
-    private var customerNamesList: List<String> = emptyList()
     private var customerNameCustomerId: MutableMap<String, String> = mutableMapOf()
     private var selectedCustomer: String? = null
     private lateinit var adapter: ReceiptEntryGroupAdapter
@@ -140,7 +140,7 @@ class ReceiptEntry : AppCompatActivity() {
         }
 
         // Payment method spinner
-        val paymentMethods = listOf("Cash", "UPI", "Bank", "Cheque")
+        val paymentMethods = listOf("cash", "upi", "bank", "cheque")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, paymentMethods)
         binding.spinnerPaymentMethod.adapter = spinnerAdapter
 
@@ -157,7 +157,7 @@ class ReceiptEntry : AppCompatActivity() {
                 showProofImage(null)
 
                 // Show correct dialog based on the selected payment method
-                if (selectedMethod == "Cash" || selectedMethod == "Cheque") {
+                if (selectedMethod == "cash" || selectedMethod == "cheque") {
                     // Enable camera option
                     binding.btnProof.text = "Add Proof (Camera)"
                 } else {
@@ -220,29 +220,28 @@ class ReceiptEntry : AppCompatActivity() {
                 uri     = proofUri!!  // the Uri you want to upload
             ) { success, publicUrl ->
                 if (success && publicUrl != null) {
-                    // Collect all data
-                    val invoices = adapter.items.map {
-                        mapOf(
-                            "invoiceNumber" to it.invoiceNumber,
-                            "brand" to it.brand,
-                            "amount" to it.amount,
-                            "billItemId" to it.billItemId
+                    val billItems = adapter.items.map {
+                        BillItemRequest(
+                            billItemId = it.billItemId,
+                            amount = it.amount
                         )
                     }
-                    val submitData = mapOf(
-                        "customer" to selectedCustomer,
-                        "invoices" to invoices,
-                        "remarks" to remarks,
-                        "paymentMethod" to paymentMethod
-                        // add proof if needed
+
+                    val request = ReceiptEntryRequest(
+                        billItems = billItems,
+                        mode = paymentMethod,
+                        collectedDate = SupportMethods.getCurrentDateFormatted(),
+                        proofUrl = publicUrl,
+                        remarks = remarks,
+                        token = SessionUtils.getApiKey(this)
                     )
-                    // Send to API here
-                    AppAlertDialog.show(this, "Submitting: $submitData")
+                    viewModel.submitReceiptEntry(request)
+
                 } else {
+                    LoadingDialog.hide();
                     // Upload failed
-                    Toast.makeText(this, "Upload failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "image syncing failed please retry adding proof", Toast.LENGTH_SHORT).show()
                 }
-                LoadingDialog.hide();
             }
 
         }
@@ -251,8 +250,8 @@ class ReceiptEntry : AppCompatActivity() {
             val method = binding.spinnerPaymentMethod.selectedItem?.toString() ?: ""
 
             // Camera permission check
-            if (method == "Cash" || method == "Cheque" ||
-                (method == "UPI" || method == "Bank")) {
+            if (method == "cash" || method == "cheque" ||
+                (method == "upi" || method == "bank")) {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 10)
                     return@setOnClickListener
@@ -260,7 +259,7 @@ class ReceiptEntry : AppCompatActivity() {
             }
 
             // Gallery/image permission check
-            if (method == "UPI" || method == "Bank") {
+            if (method == "upi" || method == "bank") {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_MEDIA_IMAGES), 11)
@@ -275,16 +274,27 @@ class ReceiptEntry : AppCompatActivity() {
             }
 
             // Proof logic
-            if (method == "Cash" || method == "Cheque") {
+            if (method == "cash" || method == "cheque") {
                 openCamera()
-            } else if (method == "UPI" || method == "Bank") {
+            } else if (method == "upi" || method == "bank") {
                 showProofPickerDialog()
             } else {
                 AppAlertDialog.show(this, "Please select a payment method first.")
             }
         }
 
-
+        viewModel.receiptSubmissionResult.observe(this) { result ->
+            LoadingDialog.hide()
+            val (success, message) = result
+            if (success) {
+                // Show success Toast/snackbar, clear form, etc.
+                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                this.finish()
+            } else {
+                // Show error Toast/snackbar
+                AppAlertDialog.show(applicationContext,message)
+            }
+        }
     }
     // inside an Activity or Fragment…
 

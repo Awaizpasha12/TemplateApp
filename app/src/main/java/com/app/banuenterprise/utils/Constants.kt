@@ -2,12 +2,11 @@ package com.app.banuenterprise.utils
 
 object Constants {
     object Config {
-        const val BASE_URL = "https://floating-alan-ste-acute.trycloudflare.com/api/app/"
+        const val BASE_URL = "https://oclc-careers-conferencing-olympus.trycloudflare.com/api/app/"
     }
 
     object DataStorePref {
         const val myPreferences = "banu_datastore"
-        const val KEY_API_KEY = "apikey"
     }
 
     object THEME {

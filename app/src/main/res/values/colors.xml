@@ -26,4 +26,7 @@
 
     <!-- Medium gray for hints/textHints -->
     <color name="gray_600">#757575</color>
+
+    <color name="success_green">#1BC47D</color>
+
 </resources>

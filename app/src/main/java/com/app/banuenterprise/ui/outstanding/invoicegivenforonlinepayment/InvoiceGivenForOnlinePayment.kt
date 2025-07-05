@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -17,6 +18,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import com.app.banuenterprise.R
+import com.app.banuenterprise.data.model.request.InvoiceGivenForOnlinePaymentRequest
+import com.app.banuenterprise.data.model.request.InvoiceItem
 import com.app.banuenterprise.databinding.ActivityInvoiceGivenForOnlinePaymentBinding
 import com.app.banuenterprise.ui.outstanding.customerwisebills.CustomerWiseBillActivity
 import com.app.banuenterprise.ui.outstanding.daywisecustomer.adapter.DayWiseAdapter
@@ -70,19 +73,28 @@ class InvoiceGivenForOnlinePayment : AppCompatActivity() {
 
             val invoiceData = invoiceNumberMap[selectedInvoiceKey]
             if (invoiceData != null) {
-                val customerName = invoiceData.optString("customerName", "")
-                val brand = invoiceData.optString("brand", "")
-                val amount = invoiceData.optDouble("amount", 0.0)
-                val billNumber = invoiceData.optString("billNumber", "")
-
-                // You can now log or process these values
-                AppAlertDialog.show(
-                    this,
-                    "Invoice Submitted:\nBill: $billNumber\nCustomer: $customerName\nBrand: $brand\nAmount: ₹$amount"
-                )
+                LoadingDialog.show(this, "submitting")
+                val billItemId = invoiceData.optString("billItemId", "")
+                val date = SupportMethods.getCurrentDateFormatted()
+                val InvoiceItem = InvoiceItem(billItemId,date)
+                var list:ArrayList<InvoiceItem> = ArrayList()
+                list.add(InvoiceItem)
+                val req = InvoiceGivenForOnlinePaymentRequest(SessionUtils.getApiKey(applicationContext),list)
+                viewModel.submitReceiptEntry(req)
             }
         }
-
+        viewModel.receiptSubmissionResult.observe(this) { result ->
+            LoadingDialog.hide()
+            val (success, message) = result
+            if (success) {
+                // Show success Toast/snackbar, clear form, etc.
+                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                this.finish()
+            } else {
+                // Show error Toast/snackbar
+                AppAlertDialog.show(applicationContext,message)
+            }
+        }
     }
     private fun showInvoiceSelector() {
         val invoiceList = invoiceNumberMap.keys.toList()

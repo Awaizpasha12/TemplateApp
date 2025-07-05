@@ -2,6 +2,8 @@ package com.app.banuenterprise.utils
 
 import com.app.banuenterprise.data.model.response.BillItem
 import org.json.JSONObject
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 class SupportMethods {
@@ -22,22 +24,21 @@ class SupportMethods {
 
         // Function to get the current day as an integer (0 for Monday, 6 for Sunday)
         fun getCurrentDay(): Int {
-            return 4;
-//            val calendar = Calendar.getInstance()
-//            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-//
-//            // Calendar returns Sunday as 1, Monday as 2, ..., Saturday as 7
-//            // Adjusting to match the format you want (0 for Monday, 6 for Sunday)
-//            return when (dayOfWeek) {
-//                Calendar.SUNDAY -> 6
-//                Calendar.MONDAY -> 0
-//                Calendar.TUESDAY -> 1
-//                Calendar.WEDNESDAY -> 2
-//                Calendar.THURSDAY -> 3
-//                Calendar.FRIDAY -> 4
-//                Calendar.SATURDAY -> 5
-//                else -> -1 // Default for invalid day (should never happen)
-//            }
+            val calendar = Calendar.getInstance()
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+            // Calendar returns Sunday as 1, Monday as 2, ..., Saturday as 7
+            // Adjusting to match the format you want (0 for Monday, 6 for Sunday)
+            return when (dayOfWeek) {
+                Calendar.SUNDAY -> 6
+                Calendar.MONDAY -> 0
+                Calendar.TUESDAY -> 1
+                Calendar.WEDNESDAY -> 2
+                Calendar.THURSDAY -> 3
+                Calendar.FRIDAY -> 4
+                Calendar.SATURDAY -> 5
+                else -> -1 // Default for invalid day (should never happen)
+            }
         }
         fun convertToBillMap(response: JSONObject): HashMap<String, JSONObject> {
             val billMap = HashMap<String, JSONObject>()
@@ -53,7 +54,7 @@ class SupportMethods {
                     val billNumber = bill.getString("billNumber")
                     val brand = bill.getString("brand")
                     val pendingAmount = bill.getDouble("pendingAmount")
-
+                    val billItemId = bill.getString("_id")
                     val key = "$billNumber-$brand"
 
                     val value = JSONObject().apply {
@@ -61,6 +62,7 @@ class SupportMethods {
                         put("brand", brand)
                         put("amount", pendingAmount)
                         put("billNumber", billNumber)
+                        put("billItemId",billItemId)
                     }
 
                     billMap[key] = value
@@ -134,6 +136,11 @@ class SupportMethods {
             return billItems
         }
 
+        fun getCurrentDateFormatted(): String {
+            val currentDate = LocalDate.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            return currentDate.format(formatter)
+        }
     }
 
 }
