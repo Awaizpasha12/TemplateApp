@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardElevation="2dp"
+    card_view:cardCornerRadius="8dp"
+    android:layout_marginBottom="12dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Item Name (clickable) -->
+        <TextView
+            android:id="@+id/tvItemName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Item"
+            android:hint="Item Name"
+            android:drawableEnd="@drawable/ic_arrow_drop_down"
+            android:background="@drawable/bg_field"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:focusable="true"
+            android:clickable="true"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Brand (autofill) -->
+        <TextView
+            android:id="@+id/tvBrand"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Brand"
+            android:background="@drawable/bg_field"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Quantity and Rate in one row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <EditText
+                android:id="@+id/etQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Qty"
+                android:inputType="number"
+                android:background="@drawable/bg_field"
+                android:padding="12dp"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/etRate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:hint="Rate"
+                android:inputType="numberDecimal"
+                android:background="@drawable/bg_field"
+                android:padding="12dp"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Amount (autofill) -->
+        <TextView
+            android:id="@+id/tvAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Amount: ₹0.00"
+            android:background="@drawable/bg_field"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- CGST and SGST in one row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvCgst"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="CGST: 0% (₹0.00)"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvSgst"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="SGST: 0% (₹0.00)"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Group Total (autofill) -->
+        <TextView
+            android:id="@+id/tvGroupTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Total: ₹0.00"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:gravity="end"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Remove Button (icon) -->
+        <ImageButton
+            android:id="@+id/btnRemoveGroup"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_remove_circle"
+            android:contentDescription="Remove group"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_gravity="end"
+            android:tint="@android:color/holo_red_dark"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -1,5 +1,6 @@
-package com.app.banuenterprise.ui.outstanding.todayscollection
+package com.app.banuenterprise.ui.salesorder.salescollection
 
+import com.app.banuenterprise.ui.salesorder.salescollection.adapter.SalesOrderAdapter
 import android.app.DatePickerDialog
 import android.graphics.Color
 import android.os.Bundle
@@ -9,42 +10,46 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.banuenterprise.R
-import com.app.banuenterprise.databinding.ActivityTodaysCollectionBinding
+import com.app.banuenterprise.databinding.ActivityTodaysSalesCollectionBinding
 import com.app.banuenterprise.utils.SessionUtils
 import com.app.banuenterprise.utils.SupportMethods
 import com.app.banuenterprise.utils.extentions.LoadingDialog
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 @AndroidEntryPoint
-class TodaysCollection : AppCompatActivity() {
-    lateinit var binding : ActivityTodaysCollectionBinding
-    val viewModel : TodaysCollectionViewModel by viewModels()
+class TodaysSalesCollection : AppCompatActivity() {
+    lateinit var binding: ActivityTodaysSalesCollectionBinding
     var dateSelected: String = ""
-    private lateinit var adapter: CollectionListAdapter
+    val viewModel: TodaysSalesCollectionViewModel by viewModels()
+    private lateinit var adapter: SalesOrderAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityTodaysCollectionBinding.inflate(layoutInflater)
+        binding = ActivityTodaysSalesCollectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         // Set up the Toolbar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = "Bills Collected"
-        binding.toolbar.setTitleTextColor(ContextCompat.getColor(this@TodaysCollection, android.R.color.white))
+        binding.toolbar.setTitleTextColor(ContextCompat.getColor(this@TodaysSalesCollection, android.R.color.white))
+
         // Set current date as default
         dateSelected = SupportMethods.getCurrentDateFormatted()
         binding.tvSelectDate.text = dateSelected
+
+        // Set up RecyclerView & Adapter
+        adapter = SalesOrderAdapter(emptyList())
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = CollectionListAdapter(emptyList())
         binding.recyclerView.adapter = adapter
+
+        // Set up date selector
         binding.tvSelectDate.setOnClickListener {
-            val calendar = Calendar.getInstance()
+            val cal = Calendar.getInstance()
             DatePickerDialog(
                 this,
                 { _, year, month, dayOfMonth ->
@@ -54,27 +59,31 @@ class TodaysCollection : AppCompatActivity() {
                     binding.tvSelectDate.text = dateSelected
                     loadDataBasedOnDate()
                 },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
-        viewModel.billItemList.observe(this) { list ->
+
+        // Observe ViewModel data
+        viewModel.billItemList.observe(this) { salesOrders ->
             LoadingDialog.hide()
-            adapter.updateList(list ?: emptyList())
-            if (list.isNullOrEmpty()) {
-                binding.recyclerView.visibility = View.GONE
-                binding.tvNoItemInList.visibility = View.VISIBLE
+            if (salesOrders.isNullOrEmpty()) {
+                binding.recyclerView.visibility = android.view.View.GONE
+                binding.tvNoItemInList.visibility = android.view.View.VISIBLE
             } else {
-                binding.recyclerView.visibility = View.VISIBLE
-                binding.tvNoItemInList.visibility = View.GONE
+                adapter.updateList(salesOrders)
+                binding.recyclerView.visibility = android.view.View.VISIBLE
+                binding.tvNoItemInList.visibility = android.view.View.GONE
             }
         }
+
         loadDataBasedOnDate()
     }
-    fun loadDataBasedOnDate(){
-        LoadingDialog.show(this,"Getting detials")
-        viewModel.getDetails(SessionUtils.getApiKey(applicationContext),dateSelected)
+
+    fun loadDataBasedOnDate() {
+        LoadingDialog.show(this, "Getting details")
+        viewModel.getDetails(SessionUtils.getApiKey(applicationContext), dateSelected)
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_search, menu)
@@ -105,4 +114,5 @@ class TodaysCollection : AppCompatActivity() {
 
         return true
     }
+
 }

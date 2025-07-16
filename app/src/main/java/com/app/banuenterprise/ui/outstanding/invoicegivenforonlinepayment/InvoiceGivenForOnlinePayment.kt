@@ -57,6 +57,8 @@ class InvoiceGivenForOnlinePayment : AppCompatActivity() {
         binding.tvSelectInvoice.setOnClickListener {
             if (invoiceNumberMap.isNotEmpty()) {
                 showInvoiceSelector()
+            }else{
+                AppAlertDialog.show(applicationContext,"No invoices scheduled today")
             }
         }
         binding.btnSubmit.setOnClickListener {

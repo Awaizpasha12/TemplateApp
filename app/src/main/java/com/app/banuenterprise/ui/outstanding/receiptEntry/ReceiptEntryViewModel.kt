@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.banuenterprise.data.model.request.CustomerWiseRequest
+import com.app.banuenterprise.data.model.request.DayWiseRequest
 import com.app.banuenterprise.data.model.request.ReceiptEntryRequest
 import com.app.banuenterprise.data.model.response.CustomerWiseResponse
 import com.app.banuenterprise.data.model.response.DayWiseResponse
@@ -29,7 +31,7 @@ class ReceiptEntryViewModel @Inject constructor(
     fun getAllCustomer(apikey : String){
         viewModelScope.launch {
             try {
-                val response = repository.dayWiseCustomer(apikey,SupportMethods.getCurrentDay())
+                val response = repository.dayWiseCustomerNew(DayWiseRequest(apikey,SupportMethods.getCurrentDay(),true))
                 _allCustomerDetails.postValue(response)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -39,7 +41,7 @@ class ReceiptEntryViewModel @Inject constructor(
     fun getCustomerWiseDetails(apikey : String,customerId : String){
         viewModelScope.launch {
             try {
-                val response = repository.customerWiseBill(apikey,customerId,SupportMethods.getCurrentDay())
+                val response = repository.customerWiseBillNew(CustomerWiseRequest(apikey,customerId,SupportMethods.getCurrentDay(),true))
                 _customerWiseResult.postValue(response)
             } catch (e: Exception) {
                 e.printStackTrace()

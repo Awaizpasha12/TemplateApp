@@ -2,8 +2,9 @@ package com.app.banuenterprise.data.model.request
 
 data class InvoiceGivenForOnlinePaymentRequest(
     val token: String,
-    val billItems: List<InvoiceItem>,
+    val items: List<InvoiceItem>,
 )
+
 
 data class InvoiceItem(
     val billItemId: String,

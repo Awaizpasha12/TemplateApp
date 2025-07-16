@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.app.banuenterprise.R
 import com.app.banuenterprise.databinding.ActivitySelectModuleBinding
 import com.app.banuenterprise.ui.outstanding.dashboard.DashboardActivity
+import com.app.banuenterprise.ui.salesorder.dashboard.SalesDashboard
 import com.app.banuenterprise.utils.SessionUtils
 
 class SelectModuleActivity : AppCompatActivity() {
@@ -23,16 +24,22 @@ class SelectModuleActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = "Select Company"
         binding.toolbar.setTitleTextColor(ContextCompat.getColor(this@SelectModuleActivity, android.R.color.white))
-
-        userRole = SessionUtils.getUserRole(applicationContext)
-        if(userRole == "1"){
+        binding.cardCompany1.setOnClickListener {
             openDashboard()
         }
-
+        binding.cardCompany2.setOnClickListener {
+            openSalesDashboard()
+        }
     }
     fun openDashboard(){
         // Launch DashboardActivity
         val intent = Intent(this, DashboardActivity::class.java)
+        startActivity(intent)
+        this.finish()
+    }
+    fun openSalesDashboard(){
+        // Launch DashboardActivity
+        val intent = Intent(this, SalesDashboard::class.java)
         startActivity(intent)
         this.finish()
     }

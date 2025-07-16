@@ -1,0 +1,98 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:padding="12dp">
+
+    <!-- Row 1: Item Name -->
+    <TextView
+        android:id="@+id/tvItemName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Biscuit"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#1a237e"
+        android:maxLines="2"
+        android:ellipsize="end"/>
+
+    <!-- Row 2: Qty, Rate, Subtotal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp">
+
+        <TextView
+            android:id="@+id/tvQty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Qty: 10"
+            android:textColor="#444"
+            android:textSize="13sp"
+            android:layout_marginEnd="14dp"/>
+
+        <TextView
+            android:id="@+id/tvRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rate: ₹250"
+            android:textColor="#444"
+            android:textSize="13sp"
+            android:layout_marginEnd="14dp"/>
+
+        <TextView
+            android:id="@+id/tvSubtotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Subtotal: ₹2,500"
+            android:textColor="#00897b"
+            android:textStyle="bold"
+            android:textSize="13sp"/>
+    </LinearLayout>
+
+    <!-- Row 3: GST details -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="3dp">
+
+        <TextView
+            android:id="@+id/tvGstRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GST: 5%"
+            android:textColor="#666"
+            android:textSize="13sp"
+            android:layout_marginEnd="10dp"/>
+
+        <TextView
+            android:id="@+id/tvGstAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GST Amt: ₹125"
+            android:textColor="#666"
+            android:textSize="13sp"/>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#eeeeee"
+        android:layout_marginVertical="8dp"/>
+
+    <!-- Row 4: Total After Tax (bold, big, right) -->
+    <TextView
+        android:id="@+id/tvTotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total (incl. GST): ₹2,625"
+        android:textColor="@color/primary_blue"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:gravity="end"/>
+
+</LinearLayout>

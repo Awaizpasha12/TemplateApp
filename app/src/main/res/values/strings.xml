@@ -18,4 +18,6 @@
     <string name="menu_change_company">Change Company</string>
     <string name="log_out">Log out</string>
     <string name="receipt_entry">Receipt Entry</string>
+    <string name="new_sales_order">New Sales Order</string>
+    <string name="reset_password">Reset Password</string>
 </resources>

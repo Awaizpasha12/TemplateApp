@@ -30,15 +30,21 @@ object SimpleSupabaseUploader {
         onResult: (success: Boolean, publicUrl: String?) -> Unit
     ) {
         CoroutineScope(Dispatchers.IO).launch {
+            var callbackCalled = false
+            suspend fun safeCallback(success: Boolean, url: String?) {
+                if (!callbackCalled) {
+                    callbackCalled = true
+                    withContext(Dispatchers.Main) { onResult(success, url) }
+                }
+            }
             try {
                 val input = context.contentResolver.openInputStream(uri)
                 if (input == null) {
-                    withContext(Dispatchers.Main) { onResult(false, null) }
+                    safeCallback(false, null)
                     return@launch
                 }
                 val bytes = input.readBytes()
                 input.close()
-
                 val bucket = "photos"
                 val filename = "${System.currentTimeMillis()}_upload.jpg"
                 val url = "$SUPABASE_URL/storage/v1/object/$bucket/$filename"
@@ -53,22 +59,19 @@ object SimpleSupabaseUploader {
                     .build()
 
                 client.newCall(request).execute().use { resp ->
-                    withContext(Dispatchers.Main) {
-                        if (resp.isSuccessful) {
-                            val publicUrl = "$SUPABASE_URL/storage/v1/object/public/$bucket/$filename"
-                            onResult(true, publicUrl)
-                        } else {
-                            onResult(false, null)
-                        }
+                    if (resp.isSuccessful) {
+                        val publicUrl = "$SUPABASE_URL/storage/v1/object/public/$bucket/$filename"
+                        safeCallback(true, publicUrl)
+                    } else {
+                        safeCallback(false, null)
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    onResult(false, null)
-                }
+                safeCallback(false, null)
             }
         }
     }
+
 
 }

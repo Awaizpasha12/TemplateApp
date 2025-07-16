@@ -2,7 +2,7 @@ package com.app.banuenterprise.utils
 
 object Constants {
     object Config {
-        const val BASE_URL = "https://oclc-careers-conferencing-olympus.trycloudflare.com/api/app/"
+        const val BASE_URL = "http://banuenterprise.duckdns.org/api/app/"
     }
 
     object DataStorePref {

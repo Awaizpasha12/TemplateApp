@@ -17,6 +17,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
+import com.app.banuenterprise.ui.resetpassword.ResetPasswordActivity
+import com.app.banuenterprise.ui.salesorder.dashboard.SalesDashboard
+import com.app.banuenterprise.ui.selectmodule.SelectModuleActivity
+import com.app.banuenterprise.utils.SessionUtils
 import com.app.banuenterprise.utils.extentions.LoadingDialog
 
 @AndroidEntryPoint
@@ -34,8 +38,12 @@ class LoginActivity : AppCompatActivity() {
         sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
         val savedApiKey = sharedPref.getString("apikey", null)
         if (!savedApiKey.isNullOrEmpty()) {
-            openDashboard()
-            return // skip login screen
+            var userRole = SessionUtils.getUserRole(applicationContext)
+            if(userRole.equals("FieldUser"))
+                openDashboard()
+            else
+                openSelectModule()
+            return
         }
         setupListeners()
         observeViewModel()
@@ -43,20 +51,33 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.btnLogin.setOnClickListener {
+//            val enteredUrl = binding.etServerUrl.text.toString().trim()
+//            if (enteredUrl.isNotEmpty() && (enteredUrl.startsWith("http://") || enteredUrl.startsWith("https://"))) {
+//                SessionUtils.setBaseUrl(this, enteredUrl)
+//            }
             LoadingDialog.show(this,"Logging in please wait")
             val username = binding.etUsername.text.toString()
             val password = binding.etPassword.text.toString()
             viewModel.login(username, password)
         }
+//        binding.tvResetPassword.setOnClickListener {
+//            val intent = Intent(this, ResetPasswordActivity::class.java)
+//            startActivity(intent)
+//        }
     }
 
     private fun observeViewModel() {
         viewModel.loginResult.observe(this) { result ->
             LoadingDialog.hide()
-            if (result.isSuccess) {
+            if (result.isSuccess == true) {
                 sharedPref.edit { putString("apikey", result.token) }
-                // Navigate to DashboardActivity or next screen
-                openDashboard()
+                var userRole = result.user?.roles?.get(0) ?: "FieldUser";
+//                var userRole = "Admin"
+                sharedPref.edit(){putString("userRole", userRole)}
+                if(userRole.equals("FieldUser"))
+                    openDashboard()
+                else
+                    openSelectModule()
             } else {
                 Toast.makeText(this, result.message, Toast.LENGTH_SHORT).show()
             }
@@ -65,6 +86,18 @@ class LoginActivity : AppCompatActivity() {
     fun openDashboard(){
         // Launch DashboardActivity
         val intent = Intent(this, DashboardActivity::class.java)
+        startActivity(intent)
+        this.finish()
+    }
+    fun openSalesDashboard(){
+        // Launch DashboardActivity
+        val intent = Intent(this, SalesDashboard::class.java)
+        startActivity(intent)
+        this.finish()
+    }
+    fun openSelectModule(){
+        // Launch DashboardActivity
+        val intent = Intent(this, SelectModuleActivity::class.java)
         startActivity(intent)
         this.finish()
     }

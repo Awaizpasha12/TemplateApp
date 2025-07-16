@@ -86,6 +86,50 @@
             android:textColorHint="@color/gray_600" />
 
     </com.google.android.material.textfield.TextInputLayout>
+    <!-- ...Existing Username and Password fields... -->
+
+<!--    &lt;!&ndash; Server URL Field &ndash;&gt;-->
+<!--    <com.google.android.material.textfield.TextInputLayout-->
+<!--        android:id="@+id/tilServerUrl"-->
+<!--        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:hint="Server URL"-->
+<!--        app:boxStrokeColor="@color/primary_blue"-->
+<!--        app:boxBackgroundColor="@color/white"-->
+<!--        app:boxStrokeWidthFocused="2dp"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/btnLogin"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:layout_marginTop="16dp">-->
+
+<!--        <com.google.android.material.textfield.TextInputEditText-->
+<!--            android:id="@+id/etServerUrl"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:inputType="textUri"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textColorHint="@color/gray_600" />-->
+<!--    </com.google.android.material.textfield.TextInputLayout>-->
+
+
+
+    <!-- ...the rest remains unchanged... -->
+
+    <!--    <TextView-->
+<!--        android:id="@+id/tvResetPassword"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Reset Password"-->
+<!--        android:textColor="@color/primary_blue"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textSize="13sp"-->
+<!--        android:clickable="true"-->
+<!--        android:focusable="true"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/tilPassword"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:layout_marginEnd="2dp"/>-->
 
     <!-- Login Button -->
     <com.google.android.material.button.MaterialButton
