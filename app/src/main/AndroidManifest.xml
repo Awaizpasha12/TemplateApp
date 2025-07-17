@@ -26,6 +26,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.outstanding.ledger.LedgerReport"
+            android:exported="false" />
+        <activity
             android:name=".ui.resetpassword.ResetPasswordActivity"
             android:exported="false" />
         <activity
