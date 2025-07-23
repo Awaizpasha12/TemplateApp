@@ -14,6 +14,7 @@ import com.app.banuenterprise.data.model.response.CollectionListResponse
 import com.app.banuenterprise.data.model.response.CustomerWiseResponse
 import com.app.banuenterprise.data.model.response.DayWiseResponse
 import com.app.banuenterprise.data.model.response.InvoicesByDayResponse
+import com.app.banuenterprise.data.model.response.LedgerResponse
 import com.app.banuenterprise.data.model.response.LoginResponse
 import com.app.banuenterprise.data.model.response.SalesEntryResponse
 import com.app.banuenterprise.data.model.response.SalesOrderListResponse
@@ -57,4 +58,7 @@ interface RetrofitInterface {
 
     @POST("change-password")
     suspend fun changePassword(@Body req : ChangePasswordRequest):ChangePasswordResponse
+
+    @POST("customer-outstanding")
+    suspend fun getLedgerReport(@Body req : OnlyApiKeyRequest): LedgerResponse
 }

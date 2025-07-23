@@ -29,6 +29,8 @@ import com.app.banuenterprise.utils.extentions.AppAlertDialog
 import com.app.banuenterprise.utils.extentions.LoadingDialog
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
+import java.time.Instant
+import java.util.Date
 
 @AndroidEntryPoint
 class InvoiceGivenForOnlinePayment : AppCompatActivity() {
@@ -58,7 +60,7 @@ class InvoiceGivenForOnlinePayment : AppCompatActivity() {
             if (invoiceNumberMap.isNotEmpty()) {
                 showInvoiceSelector()
             }else{
-                AppAlertDialog.show(applicationContext,"No invoices scheduled today")
+                AppAlertDialog.show(this,"No invoices scheduled today")
             }
         }
         binding.btnSubmit.setOnClickListener {
@@ -78,7 +80,8 @@ class InvoiceGivenForOnlinePayment : AppCompatActivity() {
                 LoadingDialog.show(this, "submitting")
                 val billItemId = invoiceData.optString("billItemId", "")
                 val date = SupportMethods.getCurrentDateFormatted()
-                val InvoiceItem = InvoiceItem(billItemId,date)
+//                val date = Instant.now().toString()
+                val InvoiceItem = InvoiceItem(billItemId,date.toString())
                 var list:ArrayList<InvoiceItem> = ArrayList()
                 list.add(InvoiceItem)
                 val req = InvoiceGivenForOnlinePaymentRequest(SessionUtils.getApiKey(applicationContext),list)
@@ -90,11 +93,11 @@ class InvoiceGivenForOnlinePayment : AppCompatActivity() {
             val (success, message) = result
             if (success) {
                 // Show success Toast/snackbar, clear form, etc.
-                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 this.finish()
             } else {
                 // Show error Toast/snackbar
-                AppAlertDialog.show(applicationContext,message)
+                AppAlertDialog.show(this,message)
             }
         }
     }

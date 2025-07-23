@@ -6,8 +6,8 @@ data class StockItem(
     val brand: String?,
     val units: String?,
     val gstApplicable: String?,
-    val gstRate: Int?,
-    val mrp: Int?,
+    val gstRate: Double?,
+    val mrp: Double?,
     val itemCode: String?,
     val __v: Int?
 )

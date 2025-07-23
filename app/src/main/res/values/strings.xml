@@ -20,4 +20,5 @@
     <string name="receipt_entry">Receipt Entry</string>
     <string name="new_sales_order">New Sales Order</string>
     <string name="reset_password">Reset Password</string>
+    <string name="menu_ledger">Ledger Report</string>
 </resources>

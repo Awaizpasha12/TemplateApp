@@ -4,7 +4,7 @@ data class SalesEntryRequest(
     val token: String,
     val ledgerId: String,
     val itemsList: List<ItemEntry>,
-    val date: String
+    val billDate: String
 )
 data class ItemEntry(
     val stockItemId: String,

@@ -2,7 +2,6 @@ package com.app.banuenterprise.ui.salesorder.salesentry
 
 
 import android.content.Intent
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -27,8 +26,6 @@ import com.app.banuenterprise.utils.SupportMethods
 import com.app.banuenterprise.utils.simpleadapters.SimpleStringListAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Date
-import java.util.Locale
 
 @AndroidEntryPoint
 class SalesEntryActivity : AppCompatActivity() {
@@ -109,7 +106,7 @@ class SalesEntryActivity : AppCompatActivity() {
                 token = token,
                 ledgerId = ledgerId,
                 itemsList = itemsList,
-                date = date
+                billDate = date
             )
 
             // Call ViewModel function with loading

@@ -19,6 +19,7 @@ import com.app.banuenterprise.ui.login.LoginActivity
 import com.app.banuenterprise.ui.outstanding.invoicegivenforonlinepayment.InvoiceGivenForOnlinePayment
 import com.app.banuenterprise.ui.outstanding.invoicegivenforonlinepayment.InvoiceGivenForOnlinePaymentViewModel
 import com.app.banuenterprise.ui.outstanding.invoicenumberentry.InvoiceNumberEntryActivity
+import com.app.banuenterprise.ui.outstanding.ledger.LedgerReport
 import com.app.banuenterprise.ui.outstanding.receiptEntry.ReceiptEntry
 import com.app.banuenterprise.ui.outstanding.selectday.SelectDays
 import com.app.banuenterprise.ui.outstanding.todayscollection.TodaysCollection
@@ -91,6 +92,9 @@ class DashboardActivity : AppCompatActivity() {
             getString(R.string.reset_password) -> {
                 openResetPassword()
             }
+            getString(R.string.menu_ledger) -> {
+                openLedger()
+            }
             else -> {
                 Toast.makeText(this, "Unknown Option", Toast.LENGTH_SHORT).show()
             }
@@ -112,6 +116,10 @@ class DashboardActivity : AppCompatActivity() {
     }
     fun openResetPassword(){
         val intent = Intent(this, ResetPasswordActivity::class.java)
+        startActivity(intent)
+    }
+    fun openLedger(){
+        val intent = Intent(this, LedgerReport::class.java)
         startActivity(intent)
     }
     fun openMyReport(){

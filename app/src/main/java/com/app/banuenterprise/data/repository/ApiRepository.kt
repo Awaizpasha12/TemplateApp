@@ -16,6 +16,7 @@ import com.app.banuenterprise.data.model.response.CollectionListResponse
 import com.app.banuenterprise.data.model.response.CustomerWiseResponse
 import com.app.banuenterprise.data.model.response.DayWiseResponse
 import com.app.banuenterprise.data.model.response.InvoicesByDayResponse
+import com.app.banuenterprise.data.model.response.LedgerResponse
 import com.app.banuenterprise.data.model.response.LoginResponse
 import com.app.banuenterprise.data.model.response.SalesEntryResponse
 import com.app.banuenterprise.data.model.response.SalesOrderListResponse
@@ -70,5 +71,8 @@ class ApiRepository @Inject constructor(
     }
     suspend fun changePassword(reqObj:ChangePasswordRequest) : ChangePasswordResponse {
         return apiRepository.changePassword(reqObj)
+    }
+    suspend fun getLedgerReport(reqObj:OnlyApiKeyRequest) : LedgerResponse {
+        return apiRepository.getLedgerReport(reqObj)
     }
 }

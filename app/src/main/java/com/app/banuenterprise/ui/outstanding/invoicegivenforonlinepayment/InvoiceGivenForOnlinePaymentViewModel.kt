@@ -6,11 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.banuenterprise.data.model.request.InvoiceGivenForOnlinePaymentRequest
 import com.app.banuenterprise.data.model.request.ReceiptEntryRequest
+import com.app.banuenterprise.data.model.response.LoginResponse
 import com.app.banuenterprise.data.repository.ApiRepository
 import com.app.banuenterprise.utils.SupportMethods
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,9 +48,21 @@ class InvoiceGivenForOnlinePaymentViewModel @Inject constructor(
                 if (response.isSuccessful && response.body() != null) {
                     _receiptSubmissionResult.postValue(Pair(true, "Receipt submitted successfully!"))
                 } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Unknown error"
-                    _receiptSubmissionResult.postValue(Pair(false, "Submission failed: $errorMsg"))
+                    _receiptSubmissionResult.postValue(Pair(false, "Duplicate entry not allowed"))
                 }
+            }
+            catch (e: HttpException) {
+                // Get error body
+                val errorBody = e.response()?.errorBody()?.string()
+                // Parse it into LoginResponse (assuming Gson)
+                val gson = Gson()
+                val loginResponse = try {
+                    gson.fromJson(errorBody, LoginResponse::class.java)
+                } catch (ex: Exception) {
+                    null
+                }
+                val errorMsg = loginResponse?.message ?: "Something went wrong"
+                _receiptSubmissionResult.postValue(Pair(false, errorMsg))
             } catch (e: Exception) {
                 _receiptSubmissionResult.postValue(Pair(false, "Submission error: ${e.localizedMessage}"))
             }

@@ -288,11 +288,11 @@ class ReceiptEntry : AppCompatActivity() {
             val (success, message) = result
             if (success) {
                 // Show success Toast/snackbar, clear form, etc.
-                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 this.finish()
             } else {
                 // Show error Toast/snackbar
-                AppAlertDialog.show(applicationContext,message)
+                AppAlertDialog.show(this,message)
             }
         }
     }
