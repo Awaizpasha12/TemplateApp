@@ -36,7 +36,26 @@ class SalesEntryViewModel @Inject constructor(
             try {
                 val response = apiRepository.addSalesEntry(request)
                 _salesEntryResult.postValue(response)
-            } catch (e: Exception) {
+            }
+            catch (e: HttpException) {
+                // Get error body
+                val errorBody = e.response()?.errorBody()?.string()
+                // Parse it into LoginResponse (assuming Gson)
+                val gson = Gson()
+                val loginResponse = try {
+                    gson.fromJson(errorBody, LoginResponse::class.java)
+                } catch (ex: Exception) {
+                    null
+                }
+                _salesEntryResult.postValue(
+                    SalesEntryResponse(
+                        isSuccess = false,
+                        data = null,
+                        message = loginResponse?.message ?: "Something went wrong"
+                    )
+                )
+            }
+            catch (e: Exception) {
                 _salesEntryResult.postValue(
                     SalesEntryResponse(
                         isSuccess = false,
