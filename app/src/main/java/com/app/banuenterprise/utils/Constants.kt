@@ -3,7 +3,7 @@ package com.app.banuenterprise.utils
 object Constants {
     object Config {
         const val BASE_URL = "http://banuenterprise.duckdns.org/api/app/"
-//        const val BASE_URL = "https://wm-another-spam-revision.trycloudflare.com/api/app/"
+//        const val BASE_URL = "http://accordingly-dubai-hope-tool.trycloudflare.com/api/app/"
     }
 
     object DataStorePref {

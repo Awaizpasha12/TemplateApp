@@ -4,5 +4,5 @@ data class CustomerWiseRequest (
     val token: String,
     val customerId : String,
     val day:Int,
-    val sendAllDays : Boolean= false
+    val sendAll : Boolean= false
 )
