@@ -56,7 +56,7 @@ interface RetrofitInterface {
     @POST("sales-order/list-sales-entry")
     suspend fun getSalesList(@Body req : CollectionListRequest):SalesOrderListResponse
 
-    @POST("change-password")
+    @POST("auth/change-password")
     suspend fun changePassword(@Body req : ChangePasswordRequest):ChangePasswordResponse
 
     @POST("customer-outstanding")
