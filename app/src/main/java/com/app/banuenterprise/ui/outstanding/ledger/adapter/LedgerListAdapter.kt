@@ -1,13 +1,15 @@
 package com.app.banuenterprise.ui.outstanding.ledger.adapter
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.banuenterprise.data.model.response.LedgerItems
-import com.app.banuenterprise.databinding.ItemCollectionBinding
+import com.app.banuenterprise.databinding.ItemCollectionNewBinding
 
 class LedgerListAdapter(
     private var items: List<LedgerItems>
-) : RecyclerView.Adapter<LedgerListAdapter.CollectionViewHolder>() {
+) : RecyclerView.Adapter<LedgerListAdapter.LedgerViewHolder>() {
+
     private var fullList: List<LedgerItems> = items.toList()
 
     fun updateList(newItems: List<LedgerItems>) {
@@ -15,6 +17,7 @@ class LedgerListAdapter(
         fullList = newItems.toList()
         notifyDataSetChanged()
     }
+
     fun filter(query: String) {
         if (query.isBlank()) {
             items = fullList
@@ -22,27 +25,44 @@ class LedgerListAdapter(
             val lower = query.lowercase()
             items = fullList.filter {
                 it.customerName.lowercase().contains(lower) ||
-                        it.amount.toString().contains(lower)
+                        it.totalOutstanding.toString().contains(lower) ||
+                        it.brandWise.any { brand -> brand.brandName.lowercase().contains(lower) }
             }
         }
         notifyDataSetChanged()
     }
+
     fun getFilteredListSize(): Int = items.size
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CollectionViewHolder {
-        val binding = ItemCollectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CollectionViewHolder(binding)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LedgerViewHolder {
+        val binding = ItemCollectionNewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return LedgerViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: CollectionViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: LedgerViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
     override fun getItemCount(): Int = items.size
 
-    inner class CollectionViewHolder(private val binding: ItemCollectionBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class LedgerViewHolder(private val binding: ItemCollectionNewBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: LedgerItems) {
             binding.tvCustomerName.text = item.customerName
-            binding.tvAmount.text = "₹%.2f".format(item.amount)
+            binding.tvAmount.text = "Total: ₹%.2f".format(item.totalOutstanding)
+
+            // Clear any previous brandwise views
+            binding.brandWiseContainer.removeAllViews()
+
+            // Add each brand as a new TextView
+            item.brandWise.forEach { brand ->
+                val tv = android.widget.TextView(binding.root.context).apply {
+                    text = "\u20B9 %.2f • %s".format(brand.outstanding, brand.brandName)
+                    setTextColor(android.graphics.Color.parseColor("#424242"))
+                    textSize = 14f
+                    setPadding(0, 2, 0, 2)
+                }
+                binding.brandWiseContainer.addView(tv)
+            }
         }
     }
 }

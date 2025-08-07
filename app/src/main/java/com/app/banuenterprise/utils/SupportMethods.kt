@@ -31,15 +31,16 @@ class SupportMethods {
             // Calendar returns Sunday as 1, Monday as 2, ..., Saturday as 7
             // Adjusting to: 0=Sunday, 1=Monday, ..., 6=Saturday
             return when (dayOfWeek) {
-                Calendar.SUNDAY -> 0
-                Calendar.MONDAY -> 1
-                Calendar.TUESDAY -> 2
-                Calendar.WEDNESDAY -> 3
-                Calendar.THURSDAY -> 4
-                Calendar.FRIDAY -> 5
-                Calendar.SATURDAY -> 6
+                Calendar.MONDAY -> 0
+                Calendar.TUESDAY -> 1
+                Calendar.WEDNESDAY -> 2
+                Calendar.THURSDAY -> 3
+                Calendar.FRIDAY -> 4
+                Calendar.SATURDAY -> 5
+                Calendar.SUNDAY -> 6
                 else -> -1 // Should never happen
             }
+
         }
 
         fun convertToBillMap(response: JSONObject): HashMap<String, JSONObject> {

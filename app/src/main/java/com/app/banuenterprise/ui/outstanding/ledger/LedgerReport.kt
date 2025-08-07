@@ -31,7 +31,7 @@ class LedgerReport : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = LedgerListAdapter(emptyList())
         binding.recyclerView.adapter = adapter
-
+        LoadingDialog.show(this,"Getting details")
         viewModel.getDetails(SessionUtils.getApiKey(applicationContext))
         viewModel.ledgerReportList.observe(this) { list ->
             LoadingDialog.hide()

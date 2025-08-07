@@ -59,6 +59,6 @@ interface RetrofitInterface {
     @POST("auth/change-password")
     suspend fun changePassword(@Body req : ChangePasswordRequest):ChangePasswordResponse
 
-    @POST("customer-outstanding")
+    @POST("outstanding/customer-outstanding")
     suspend fun getLedgerReport(@Body req : OnlyApiKeyRequest): LedgerResponse
 }
